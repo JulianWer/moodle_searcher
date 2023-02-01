@@ -1,0 +1,42 @@
+body{
+    background-color:white;
+    color:black;
+    width: 30em;
+}
+
+#moodle_logo{
+    float: left;
+    height: 3em;
+    margin: 1em;
+}
+h1{
+    vertical-align: sub;
+}
+.header {
+    padding: 0.1em;
+    position: relative;
+    white-space: nowrap;
+}
+
+
+.search{
+    margin: 1em;
+    padding: 1em;
+    position: relative;
+}
+.input_field{
+    margin: 0;
+    width: 15em;
+    height: 30px;
+    vertical-align: middle;
+    border-top-left-radius: 0.5em;
+    border-bottom-left-radius: 0.5em;
+
+}
+.search_button{
+    vertical-align: middle;
+    border-top-right-radius: 0.5em;
+    border-bottom-right-radius: 0.5em;
+}
+
+

@@ -1,5 +1,8 @@
-chrome.tabs.onUpdated.addListener((tabId, tab) => {
-    if(tab.url){
-        console.log(string(tab.url))
-    }
-})
+
+
+// chrome.storage.local.set({key: "value"}, function() {
+//     console.log("Data is stored in storage.");
+//   });
+//   chrome.storage.local.get(["key"], function(result) {
+//     console.log("Value of key is: " + result.key);
+//   });

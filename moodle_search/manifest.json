@@ -6,6 +6,10 @@
   "background": {
     "service_worker":"background.js"
   },
+  "content_scripts":[{
+    "matches": ["https://moodle.hs-mannheim.de/*"],
+    "js":["scripts/contentScript.js"]
+  }],
   
   "action": {
     "default_popup": "popup/index.html",

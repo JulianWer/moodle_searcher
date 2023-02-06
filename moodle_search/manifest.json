@@ -8,8 +8,7 @@
   },
   "content_scripts":[{
     "matches": ["https://moodle.hs-mannheim.de/*"],
-    "js":["scripts/contentScript.js"],
-    "type": "module"
+    "js":["scripts/contentScript.js"]
   }],
   
   "action": {

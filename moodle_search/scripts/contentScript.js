@@ -1,4 +1,5 @@
 
+
 function getArrayOfCorrectPdfUrls(){
     let urls = new Array();
     const a = document.querySelectorAll("a.aalink");
@@ -10,7 +11,8 @@ function getArrayOfCorrectPdfUrls(){
     }
     return urls;
 }
-console.log(getArrayOfCorrectPdfUrls());
+
+
 (async () => {
     const response = await chrome.runtime.sendMessage({urls: getArrayOfCorrectPdfUrls()});
   })();

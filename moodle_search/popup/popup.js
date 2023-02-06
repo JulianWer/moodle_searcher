@@ -1,18 +1,14 @@
-if (typeof browser === "undefined") {
-  var browser = chrome;
-}
+// for cross browser support
+let _browser = typeof browser === "undefined" ? chrome : browser;
 
-document.getElementById("reload_button").addEventListener("click", () => {
-    console.log("reload button clicked");
+document.getElementById("reload_button").addEventListener("click", () => sendMessage("reloadMessage"));
+document.getElementById("search_button").addEventListener("click", () => sendMessage("searchMessage"));
+
+
+function sendMessage(name, data = {}){
     (async () => {
-        const [tab] = await browser.tabs.query({active: true, lastFocusedWindow: true});
-        await browser.tabs.sendMessage(tab.id, {name: "reloadMessage"});
+        const [tab] = await _browser.tabs.query({active: true, lastFocusedWindow: true});
+        data["name"] = name;
+        await _browser.tabs.sendMessage(tab.id, data);
     })();
-});
-
-document.getElementById("search_button").addEventListener("click", () => {
-    browser.runtime.sendMessage({name:"searchMessage"});
-});
-
-
-
+}

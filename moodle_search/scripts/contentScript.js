@@ -2,9 +2,10 @@
 let _browser = typeof browser === "undefined" ? chrome : browser;
 
 _browser.runtime.onMessage.addListener(
-  (message, _, __) => {
+  (message, _, sendResponse) => {
     switch (message.name) {
       case "searchMessage":
+        sendResponse({pdf:getPdf(message.query), page:2});//TODO page
         break;
       case "reloadMessage":
         dowloadAllPdfs(getArrayOfCorrectPdfUrls());
@@ -14,6 +15,8 @@ _browser.runtime.onMessage.addListener(
     }
   }
 );
+
+
 
 function getArrayOfCorrectPdfUrls() {
   const urls = [];
@@ -78,6 +81,15 @@ function savePdf(pdf, key) {
 }
 
 
+function getPdf(query){
+  return getData("MoodleExtensionDB", "Files", {id:1})
+  .then((data) => {
+    console.log("Data retrieved successfully:", data);
+  })
+  .catch((error) => {
+    console.error("Error retrieving data:", error);
+  });
+}
 
 function storeData(dbName, storeName, value) {
   return new Promise((resolve, reject) => {
@@ -105,6 +117,27 @@ function storeData(dbName, storeName, value) {
 };
 
 
+function getData(dbName, storeName, key) {
+  return new Promise((resolve, reject) => {
+    const request = window.indexedDB.open(dbName, 1);
+    request.onsuccess = (event) => {
+      const db = event.target.result;
+      const transaction = db.transaction([storeName], "readonly");
+      const objectStore = transaction.objectStore(storeName);
+      const objectStoreRequest = objectStore.get(1);
+      objectStoreRequest.onsuccess = (event) => {
+        resolve(event.target.result);
+      };
+      objectStoreRequest.onerror = (error) => {
+        reject(error);
+      };
+    };
+    request.onerror = (error) => {
+      reject(error);
+    };
+  });
+};
+
 
 /*
 PDF IFrame
@@ -119,3 +152,4 @@ iframeDocument.PDFViewerApplication.pdfViewer.findController.executeCommand('fin
     query: searchText
 })
 */
+

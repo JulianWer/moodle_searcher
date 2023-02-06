@@ -5,8 +5,8 @@ if (typeof browser === "undefined") {
 document.getElementById("reload_button").addEventListener("click", () => {
     console.log("reload button clicked");
     (async () => {
-        const [tab] = await chrome.tabs.query({active: true, lastFocusedWindow: true});
-        await chrome.tabs.sendMessage(tab.id, {name: "reloadMessage"});
+        const [tab] = await browser.tabs.query({active: true, lastFocusedWindow: true});
+        await browser.tabs.sendMessage(tab.id, {name: "reloadMessage"});
     })();
 });
 

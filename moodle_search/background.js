@@ -10,7 +10,7 @@ console.log("background.js is running");
 chrome.runtime.onMessage.addListener(gotMessage);
 
 function gotMessage(message, sender, sendResponse){
-    console.log(message.urls);
+    //console.log(message.urls);
 }
 
 //filetype:pdf site:http://xyz.com/abc <your keyword(s) here>

@@ -1,12 +1,17 @@
 // for cross browser support
 let _browser = typeof browser === "undefined" ? chrome : browser;
 
+
 _browser.runtime.onMessage.addListener(
   (message, _, sendResponse) => {
     switch (message.name) {
       case "searchMessage":
-        sendResponse({pdf:getPdf(message.query), page:2});//TODO page
-        break;
+        getPdf(message.query).then(
+          (val)=>{
+            console.log(typeof val);
+            sendResponse(val);
+          }).catch(err=>console.log(err));
+        return true;
       case "reloadMessage":
         dowloadAllPdfs(getArrayOfCorrectPdfUrls());
         break;
@@ -15,8 +20,6 @@ _browser.runtime.onMessage.addListener(
     }
   }
 );
-
-
 
 function getArrayOfCorrectPdfUrls() {
   const urls = [];
@@ -82,13 +85,9 @@ function savePdf(pdf, key) {
 
 
 function getPdf(query){
-  return getData("MoodleExtensionDB", "Files", {id:1})
-  .then((data) => {
-    console.log("Data retrieved successfully:", data);
-  })
-  .catch((error) => {
-    console.error("Error retrieving data:", error);
-  });
+   //TODO page
+    return getData("MoodleExtensionDB", "Files", {id:1})
+      .then((pdf) => {return {pdf:String(pdf.data), name:String(pdf.name), page:2}});
 }
 
 function storeData(dbName, storeName, value) {

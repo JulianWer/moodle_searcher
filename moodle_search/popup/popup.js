@@ -6,22 +6,23 @@ document.getElementById("search_button").addEventListener("click", () => sendMes
 
 
 function showPdf(response){
-    let pdf = response.pdf;//contains data, id, name
+    // TODO doesnt work, yet
+    let pdf = response.pdf;    
     let page = response.page;
     let iframe_container = document.getElementById("iframe_container");
     console.log(iframe_container);
-    var blob = new Blob([pdf.data], {type: 'application/pdf'});
-    var blobURL = URL.createObjectURL(blob);
-    iframe_container.innerHTML = '<iframe id="pdf-js-viewer" src="' + pdf.data + '" width="100%" height="100%" allowfullscreen webkitallowfullscreen></iframe>';
+    let blob = new Blob([pdf], {type: 'application/pdf'});
+    let blobURL = URL.createObjectURL(blob);
+    //blobURL = "https://moodle.hs-mannheim.de/pluginfile.php/353156/mod_resource/content/2/FlippedClassroom.pdf";
+    iframe_container.innerHTML = '<iframe src="'+ blobURL +'" width="100%" height="500px">';
 }
 
-function sendMessage(name, data = {}, response_handler = null){
-    (async () => {
-        const [tab] = await _browser.tabs.query({active: true, lastFocusedWindow: true});
+function sendMessage(name, data = {}, response_handler = null){    
+    _browser.tabs.query({active: true, lastFocusedWindow: true}, (tabs) => {
         data["name"] = name;
-        const reponse = await _browser.tabs.sendMessage(tab.id, data);
-        response_handler(reponse);
-    })();
+        _browser.tabs.sendMessage(tabs[0].id, data, response_handler);        
+    });
+    
 }
 
 function getQuery(){

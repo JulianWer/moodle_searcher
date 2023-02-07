@@ -4,17 +4,14 @@ let _browser = typeof browser === "undefined" ? chrome : browser;
 document.getElementById("reload_button").addEventListener("click", () => sendMessage("reloadMessage"));
 document.getElementById("search_button").addEventListener("click", () => sendMessage("searchMessage", {query: getQuery()}, showPdf));
 
-
 function showPdf(response){
-    // TODO doesnt work, yet
-    let pdf = response.pdf;    
-    let page = response.page;
-    let iframe_container = document.getElementById("iframe_container");
-    console.log(iframe_container);
-    let blob = new Blob([pdf], {type: 'application/pdf'});
-    let blobURL = URL.createObjectURL(blob);
-    //blobURL = "https://moodle.hs-mannheim.de/pluginfile.php/353156/mod_resource/content/2/FlippedClassroom.pdf";
-    iframe_container.innerHTML = '<iframe src="'+ blobURL +'" width="100%" height="500px">';
+    let iframe = document.createElement("iframe");
+    iframe.setAttribute("src", response.pdf+"#page="+response.page);
+    iframe.setAttribute("width", "100%");
+    iframe.setAttribute("height", "500px");
+    iframe.setAttribute("frameborder", "0");
+    iframe_container.childNodes.forEach(c => iframe_container.removeChild(c));
+    iframe_container.appendChild(iframe);
 }
 
 function sendMessage(name, data = {}, response_handler = null){    
@@ -22,7 +19,6 @@ function sendMessage(name, data = {}, response_handler = null){
         data["name"] = name;
         _browser.tabs.sendMessage(tabs[0].id, data, response_handler);        
     });
-    
 }
 
 function getQuery(){

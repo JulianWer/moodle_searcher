@@ -123,7 +123,7 @@ function getData(dbName, storeName, key) {
       const db = event.target.result;
       const transaction = db.transaction([storeName], "readonly");
       const objectStore = transaction.objectStore(storeName);
-      const objectStoreRequest = objectStore.get(1);
+      const objectStoreRequest = objectStore.get(16);
       objectStoreRequest.onsuccess = (event) => {
         resolve(event.target.result);
       };

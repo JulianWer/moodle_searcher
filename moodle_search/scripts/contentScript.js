@@ -53,6 +53,7 @@ function dowloadAllPdfs(urls) {
 }
 
 function downloadPdf(url) {
+  //TODO save the path
   var xhr = new XMLHttpRequest();
   xhr.open("GET", url.link);
   xhr.responseType = "blob";

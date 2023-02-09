@@ -33,7 +33,7 @@ function getPdfTexts(data, query) {
 function getPage(data){
     console.log("getPage");
     pdfjsLib.getDocument(data).promise.then(async (pdf) => 
-        pdf.getPage(1).then(handlePages)
+        pdf.getPage(1).then(renderPages)
     )
 }
 
@@ -75,16 +75,18 @@ function clearDiv(elementID) {
     document.getElementById(elementID).innerHTML = "";
 }
 
+function getURLForClick() {}
 
-function handlePages(page) {
+function renderPages(page) {
     console.log("handlePages");
-    var viewport = page.getViewport({ scale: 1.0 });
+    var viewport = page.getViewport({ scale: 0.8 });
     var canvas = document.createElement("canvas");
     var context = canvas.getContext('2d');
     canvas.height = viewport.height;
     canvas.width = viewport.width;
     console.log(canvas);
     document.getElementById("result-container").appendChild(canvas);
+    canvas.onclick = () => { window.open("sample.pdf") }
     let renderContext = { canvasContext: context, viewport: viewport };
     let renderTask = page.render(renderContext)
     renderTask.promise.then(function () {

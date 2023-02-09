@@ -31,42 +31,38 @@ function getPdfTexts(data, query) {
 }
 
 
-// async function getPdfText(data) {
-//     let doc = await pdfjsLib.getDocument(data);
-//     let pageTexts = Array.from({length: doc.numPages}, async (_, pageNumber) => {
-//         return (
-//             await (
-//                 await doc.getPage(pageNumber+1)
-//             ).getTextContent()
-//         ).items.map(token => token.str).join('');
-//     });
-//     return await pageTexts;//filter(pageTexts, (text) => text.includes(query)));
-// }
-
 // for cross browser support
 let _browser = typeof browser === "undefined" ? chrome : browser;
 console.log("popup is running");
 
 document.getElementById("reload_button").addEventListener("click", () => sendMessage("reloadMessage"));
-document.getElementById("search_button").addEventListener("click", () => sendMessage("searchMessage", {query: getQuery()}, showPdf));
+document.getElementById("search_button").addEventListener("click", () => sendMessage("searchMessage", {query: getQuery()}));
+document.getElementById("search_button").addEventListener("click", () => sendMessage("getAllSubjects", {}, showResults));
+//document.getElementById("result_cell").addEventListener("click", () => clearDiv("result-container"));
+function showResults(response){
+    document.getElementById("result-container").appendChild(createTable(response));
+}
 
-async function showPdf(response){
-    console.log(await getPdfTexts(response.pdf, ""));
-    let iframe = document.createElement("iframe");
-    iframe.setAttribute("src", response.pdf+"#page="+response.page);
-    iframe.setAttribute("width", "100%");
-    iframe.setAttribute("height", "500px");
-    iframe.setAttribute("frameborder", "0");
-    iframe_container.childNodes.forEach(c => iframe_container.removeChild(c));    
-    iframe_container.appendChild(iframe);
+function createTable(response){
+    let table = document.createElement("table");
+    table.setAttribute("id", "results_table");
+    for (let arg of response){
+        table.appendChild(createRow(arg));
+    }
+    return table;
+}
 
-    // TODO not working, yet
-    var blob = new Blob([response.pdf], {type: "application/pdf"});
-    // Create Blog URL 
-    var url = window.URL.createObjectURL(blob);
-    chrome.tabs.create({url:url});
-    window.open(url, 'something.pdf');
+function createRow(arg){
+    let row = document.createElement("tr");
+    let cell = document.createElement("td");
+    cell.onclick = () => clearDiv("result-container");
+    cell.appendChild(document.createTextNode(arg));
+    row.appendChild(cell);
+    return row;
+}
 
+function clearDiv(elementID) {
+    document.getElementById(elementID).innerHTML = "";
 }
 
 function sendMessage(name, data = {}, response_handler = null){    

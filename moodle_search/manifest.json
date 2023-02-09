@@ -10,12 +10,8 @@
     "matches": ["https://moodle.hs-mannheim.de/*"],
     "js":["scripts/contentScript.js"]
   }],
-  
   "action": {
     "default_popup": "popup/index.html",
     "default_icon": "images/search.png"
-  },
-  "optional_host_permissions": [
-    "https://cdn.jsdelivr.net/*"
-  ]
+  }
 }

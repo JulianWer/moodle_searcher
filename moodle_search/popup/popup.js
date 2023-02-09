@@ -1,5 +1,8 @@
+import '../pdf.min.js'
+
 // for cross browser support
 let _browser = typeof browser === "undefined" ? chrome : browser;
+console.log("popup is running");
 
 document.getElementById("reload_button").addEventListener("click", () => sendMessage("reloadMessage"));
 document.getElementById("search_button").addEventListener("click", () => sendMessage("searchMessage", {query: getQuery()}, showPdf));

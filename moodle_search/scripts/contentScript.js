@@ -70,7 +70,7 @@ function savePdf(pdf, key) {
 
   fileReader.onload = function (evt) {
     var result = evt.target.result;
-    storeData("MoodleExtensionDB", "Files", {
+    storeData("Files", {
       name: key,
       data: result
     }).then(() => {
@@ -86,27 +86,26 @@ function savePdf(pdf, key) {
 
 function getPdf(query){
    //TODO page
-    return getData("MoodleExtensionDB", "Files", {id:1})
+    return getData("Files", {id:1})
       .then((pdf) => {return {pdf:String(pdf.data), name:String(pdf.name), page:2}});
 }
 
-function storeData(dbName, storeName, value) {
+function getDBRequest(reject){
+  const request = window.indexedDB.open("MoodleExtensionDB", 1);
+  request.onerror = reject;
+  return request;
+}
+
+function storeData(storeName, value) {
   return new Promise((resolve, reject) => {
-    const request = window.indexedDB.open(dbName, 1);
+    const request = getDBRequest(reject);
     request.onsuccess = (event) => {
       const db = event.target.result;
       const transaction = db.transaction([storeName], "readwrite");
       const objectStore = transaction.objectStore(storeName);
       const objectStoreRequest = objectStore.put(value);
-      objectStoreRequest.onsuccess = () => {
-        resolve();
-      };
-      objectStoreRequest.onerror = (error) => {
-        reject(error);
-      };
-    };
-    request.onerror = (error) => {
-      reject(error);
+      objectStoreRequest.onsuccess = resolve;
+      objectStoreRequest.onerror = reject;
     };
     request.onupgradeneeded = (event) => {
       const db = event.target.result;
@@ -115,24 +114,16 @@ function storeData(dbName, storeName, value) {
   });
 };
 
-
-function getData(dbName, storeName, key) {
+function getData(storeName, key) {
   return new Promise((resolve, reject) => {
-    const request = window.indexedDB.open(dbName, 1);
+    const request = getDBRequest(reject);
     request.onsuccess = (event) => {
       const db = event.target.result;
       const transaction = db.transaction([storeName], "readonly");
       const objectStore = transaction.objectStore(storeName);
-      const objectStoreRequest = objectStore.get(16);
-      objectStoreRequest.onsuccess = (event) => {
-        resolve(event.target.result);
-      };
-      objectStoreRequest.onerror = (error) => {
-        reject(error);
-      };
-    };
-    request.onerror = (error) => {
-      reject(error);
+      const objectStoreRequest = objectStore.get(16);//TODO key
+      objectStoreRequest.onsuccess = (event) => resolve(event.target.result);
+      objectStoreRequest.onerror = reject;
     };
   });
 };

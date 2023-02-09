@@ -1,4 +1,8 @@
 import '../pdf.min.js'
+pdfjsLib.GlobalWorkerOptions.workerSrc = '../pdf.worker.js';
+
+
+console.log(getPDFText("https://dagrs.berkeley.edu/sites/default/files/2020-01/sample.pdf"));
 
 // for cross browser support
 let _browser = typeof browser === "undefined" ? chrome : browser;

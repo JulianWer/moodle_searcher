@@ -188,7 +188,7 @@ async function pageMatchesQuery(page, query) {
 }
 
 async function fileMatchesQuery(file, query) {
-    for await (const page of await getAllPagesFromFile(file)) {
+    for (const page of await getAllPagesFromFile(file)) {
         if (await pageMatchesQuery(page, query)) {
             return true;
         }

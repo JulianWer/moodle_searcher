@@ -9,8 +9,12 @@ console.log("popup is running");
 let currentTableLevel = 0; // 0 = empty, 1 = subjects, 2 = files, 3 = pages
 let currentSubject = null;
 
+let cachedSubjects = [];
+let cachedFiles = [];
+
+
 document.getElementById("reload_button").addEventListener("click", () => sendMessage("reloadMessage"));
-document.getElementById("search_button").addEventListener("click", () => showSubjects(getQuery()));
+document.getElementById("search_button").addEventListener("click", () => showSubjectsFromQuery(getQuery()));
 document.getElementById("prev-button").addEventListener("click", () => showPrevTable());
 
 function clearDiv(elementID) {
@@ -43,11 +47,11 @@ function showPrevTable(){
             break;
         case 2:
             currentTableLevel = 1;
-            showSubjects(getQuery());
+            showSubjects(cachedSubjects, getQuery());
             break;
         case 3:
             currentTableLevel = 2;
-            showFilesOfSubject(currentSubject, getQuery());
+            showFilesOfSubject(currentSubject, cachedFiles, getQuery());
             break;
         case 0:
         default:
@@ -55,24 +59,33 @@ function showPrevTable(){
             break;    
     }
 }
+async function showSubjectsFromQuery(query){
+    let subjects = await getAllSubjectsOfQuery(query);
+    cachedSubjects = subjects;
+    showSubjects(subjects, query);
+}
 
-async function showSubjects(query) {
+async function showSubjects(subjects, query) {
     document.getElementById("prev-button").style.visibility = "visible";
 
-    let subjects = await getAllSubjectsOfQuery(query);
     currentTableLevel = 1;
     createTable(subjects.map((subject)=>
         [
             subject.name, 
-            () => showFilesOfSubject(subject, query)
+            () => showFilesOfSubjectFromQuery(subject, query)
         ]
     ));
 }
 
-async function showFilesOfSubject(subject, query){
+async function showFilesOfSubjectFromQuery(subject, query) {
+    let files = await getAllFilesFromSubjectOfQuery(subject, query);
+    cachedFiles = files;
+    showFilesOfSubject(currentSubject, files, query);
+}
+
+async function showFilesOfSubject(subject, files, query){
     currentSubject = subject,
     currentTableLevel = 2;
-    let files = await getAllFilesFromSubjectOfQuery(subject, query);
     createTable(files.map((file) =>
         [
             file.name,

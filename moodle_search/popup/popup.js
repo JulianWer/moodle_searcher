@@ -58,7 +58,7 @@ async function showFilesOfSubject(subject, query){
 function renderPages(page, originalFileUrl) {
     //console.log("handlePages");
     //console.log(page);
-    var viewport = page.getViewport({ scale: 0.8 });
+    var viewport = page.getViewport({ scale: 0.5 });
     var canvas = document.createElement("canvas");
     var context = canvas.getContext('2d');
     canvas.height = viewport.height;

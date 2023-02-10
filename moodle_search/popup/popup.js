@@ -7,10 +7,7 @@ let _browser = typeof browser === "undefined" ? chrome : browser;
 console.log("popup is running");
 
 document.getElementById("reload_button").addEventListener("click", () => sendMessage("reloadMessage"));
-document.getElementById("search_button").addEventListener("click", () => {
-    let query = getQuery();
-    getAllSubjectsOfQuery(query).then(async (subjects) => showSubjects(await subjects, query));
-});
+document.getElementById("search_button").addEventListener("click", () => showSubjects(getQuery()));
 
 function clearDiv(elementID) {
     document.getElementById(elementID).innerHTML = "";
@@ -34,7 +31,9 @@ function createTable(valueAndEventList) {
     document.getElementById("result-container").appendChild(table);
 }
 
-async function showSubjects(subjects, query) {
+async function showSubjects(query) {
+    console.log(query);
+    let subjects = await getAllSubjectsOfQuery(query);
     createTable(subjects.map((subject)=>
         [
             subject.name, 

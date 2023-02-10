@@ -149,8 +149,9 @@ async function getTextOfPage(page){
 }
 
 async function pageMatchesQuery(page, query){
-    // TODO create query language options (OR, AND, NOT, ...)
-    return (await getTextOfPage(page)).toLowerCase().replace(" ", "").includes(query);
+    return false;
+    // TODO create query language options (OR, AND, NOT, ..., Case Sesnsitive etc)
+    return (await getTextOfPage(page)).toLowerCase().replace(" ", "").includes(query.toLowerCase().replace(" ", ""));
 }
 
 async function fileMatchesQuery(file, query){
@@ -158,13 +159,13 @@ async function fileMatchesQuery(file, query){
 }
 
 async function subjectMatchesQuery(subject, query){
-    return containsFilter(await getAllFilesOfSubject(subject), (file) => fileMatchesQuery(file, query));
+    return containsFilter(await getAllFilesOfSubject(subject), async (file) => await fileMatchesQuery(file, query));
 }
 
-function containsFilter(iter, filter){
+async function containsFilter(iter, filter){
     // returns true if filter is true for at least one element of iter
     for (let i of iter){
-        if (filter(i)){
+        if (await filter(await i)){
             return true;
         }
     }
@@ -172,13 +173,13 @@ function containsFilter(iter, filter){
 }
 
 export async function getAllPagesFromFileOfQuery(file, query){
-    return (await getAllPagesFromFile(file)).filter((page)=>pageMatchesQuery(page, query));
+    return (await getAllPagesFromFile(file)).filter(async (page) => await pageMatchesQuery(page, query));
 }
 
 export async function getAllFilesFromSubjectOfQuery(subject, query){
-    return (await getAllFilesOfSubject(subject)).filter((file)=>fileMatchesQuery(file, query));
+    return (await getAllFilesOfSubject(subject)).filter(async (file)=> await fileMatchesQuery(file, query));
 }
 
 export async function getAllSubjectsOfQuery(query){
-    return (await getAllSubjects()).filter(subjectMatchesQuery);
+    return (await getAllSubjects()).filter(async (subject)=> await subjectMatchesQuery(subject, query));
 }

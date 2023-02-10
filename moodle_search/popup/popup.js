@@ -1,84 +1,65 @@
+import { getAllSubjectsOfQuery, getAllFilesFromSubjectOfQuery, getAllPagesFromFileOfQuery } from './script.js';
 import '../pdfjs-3.3.122-dist/build/pdf.js'
 pdfjsLib.GlobalWorkerOptions.workerSrc = '../pdfjs-3.3.122-dist/build/pdf.worker.js';
 
 
-function textFilter(page, query) {
-    return page.includes(query);
-}
-
-function getPdfTexts(data, query) {
-    function getTextOfPage(page) {
-        return page.getTextContent().then(
-            (textContent) => textContent.items.map((i) => i.str).join(" ")
-        )
-    }
-    async function getArrayOfPages(pdf) {
-        let pages = {};
-        for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
-            let page = await pdf.getPage(pageNumber);
-            let text = await getTextOfPage(page);
-            if (textFilter(text, query)) {
-                pages[pageNumber] = text;
-            }
-        }
-        return pages;
-    }
-    return new Promise((resolve, reject) => {
-        pdfjsLib.getDocument(data).promise.then(async (pdf) => {
-            resolve(await getArrayOfPages(pdf));
-        })
-    });
-}
-
-function getPage(data){
-    console.log("getPage");
-    pdfjsLib.getDocument(data).promise.then(async (pdf) => 
-        pdf.getPage(1).then(renderPages)
-    )
-}
-
-console.log(await getPdfTexts("sample.pdf", ""));
 // for cross browser support
 let _browser = typeof browser === "undefined" ? chrome : browser;
 console.log("popup is running");
 
 document.getElementById("reload_button").addEventListener("click", () => sendMessage("reloadMessage"));
-document.getElementById("search_button").addEventListener("click", () => sendMessage("searchMessage", { query: getQuery() }));
-document.getElementById("search_button").addEventListener("click", () => sendMessage("getAllSubjects", {}, showResults));
-//document.getElementById("result_cell").addEventListener("click", () => clearDiv("result-container"));
-function showResults(response) {
-    document.getElementById("result-container").appendChild(createTable(response));
-}
-
-function createTable(response) {
-    let table = document.createElement("table");
-    table.setAttribute("id", "results_table");
-    for (let arg of response) {
-        table.appendChild(createRow(arg));
-    }
-    return table;
-}
-
-function createRow(arg) {
-    let row = document.createElement("tr");
-    let cell = document.createElement("td");
-    cell.onclick = () => {
-        clearDiv("result-container");
-        getPage("sample.pdf");
-    }
-    cell.appendChild(document.createTextNode(arg));
-    row.appendChild(cell);
-    return row;
-}
+document.getElementById("search_button").addEventListener("click", () => {
+    let query = getQuery();
+    getAllSubjectsOfQuery(query).then(async (subjects) => showSubjects(await subjects, query));
+});
 
 function clearDiv(elementID) {
     document.getElementById(elementID).innerHTML = "";
 }
 
-function getURLForClick() {}
+function createRow(name, onclick) {
+    let row = document.createElement("tr");
+    let cell = document.createElement("td");
+    cell.onclick = onclick;
+    cell.appendChild(document.createTextNode(name));
+    row.appendChild(cell);
+    return row;
+}
 
-function renderPages(page) {
-    console.log("handlePages");
+function createTable(valueAndEventList) {
+    clearDiv("result-container");
+    let table = document.createElement("table");
+    table.setAttribute("id", "results_table");
+    for (let [value, event] of valueAndEventList)
+        table.appendChild(createRow(value, event));
+    document.getElementById("result-container").appendChild(table);
+}
+
+async function showSubjects(subjects, query) {
+    createTable(subjects.map((subject)=>
+        [
+            subject.name, 
+            () => showFilesOfSubject(subject, query)
+        ]
+    ));
+}
+
+async function showFilesOfSubject(subject, query){
+    let files = await getAllFilesFromSubjectOfQuery(subject, query);
+    createTable(files.map((file) =>
+        [
+            file.name,
+            () => {
+                clearDiv("result-container");
+                getAllPagesFromFileOfQuery(file, query).then((pages)=>pages.forEach((page)=>renderPages(page, file.url)));
+            }
+        ]
+    ));
+}
+
+function renderPages(page, originalFileUrl) {
+    //console.log("handlePages");
+    //console.log(page);
     var viewport = page.getViewport({ scale: 0.8 });
     var canvas = document.createElement("canvas");
     var context = canvas.getContext('2d');
@@ -86,9 +67,9 @@ function renderPages(page) {
     canvas.width = viewport.width;
     console.log(canvas);
     document.getElementById("result-container").appendChild(canvas);
-    canvas.onclick = () => { window.open("sample.pdf") }
+    canvas.onclick = () => { window.open(originalFileUrl + "#page=" + page._pageIndex) }
     let renderContext = { canvasContext: context, viewport: viewport };
-    let renderTask = page.render(renderContext)
+    let renderTask = page.render(renderContext);
     renderTask.promise.then(function () {
         console.log('Page rendered');
     });

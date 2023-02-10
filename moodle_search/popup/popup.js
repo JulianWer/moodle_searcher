@@ -6,8 +6,12 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = '../pdfjs-3.3.122-dist/build/pdf.worker
 let _browser = typeof browser === "undefined" ? chrome : browser;
 console.log("popup is running");
 
+let currentTableLevel = 0; // 0 = empty, 1 = subjects, 2 = files, 3 = pages
+let currentSubject = null;
+
 document.getElementById("reload_button").addEventListener("click", () => sendMessage("reloadMessage"));
 document.getElementById("search_button").addEventListener("click", () => showSubjects(getQuery()));
+document.getElementById("prev-button").addEventListener("click", () => showPrevTable());
 
 function clearDiv(elementID) {
     document.getElementById(elementID).innerHTML = "";
@@ -31,9 +35,30 @@ function createTable(valueAndEventList) {
     document.getElementById("result-container").appendChild(table);
 }
 
+function showPrevTable(){
+    clearDiv("result-container");
+    console.log("showPrevTable"+currentTableLevel);
+    switch(currentTableLevel){
+        case 1:
+            currentTableLevel = 0;
+            break;
+        case 2:
+            currentTableLevel = 1;
+            showSubjects(getQuery());
+            break;
+        case 3:
+            currentTableLevel = 2;
+            showFilesOfSubject(currentSubject, getQuery());
+            break;
+        case 0:
+        default:
+                break;    
+    }
+}
+
 async function showSubjects(query) {
-    console.log(query);
     let subjects = await getAllSubjectsOfQuery(query);
+    currentTableLevel = 1;
     createTable(subjects.map((subject)=>
         [
             subject.name, 
@@ -43,12 +68,15 @@ async function showSubjects(query) {
 }
 
 async function showFilesOfSubject(subject, query){
+    currentSubject = subject,
+    currentTableLevel = 2;
     let files = await getAllFilesFromSubjectOfQuery(subject, query);
     createTable(files.map((file) =>
         [
             file.name,
             () => {
                 clearDiv("result-container");
+                currentTableLevel = 3;
                 getAllPagesFromFileOfQuery(file, query).then((pages)=>pages.forEach((page)=>renderPages(page, file.url)));
             }
         ]

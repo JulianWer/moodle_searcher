@@ -45,3 +45,13 @@ h1{
 }
 
 
+#result-container{
+    overflow-y: scroll;
+    height: 70%;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+#result-container::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera*/
+}

@@ -75,6 +75,27 @@ function storeData(storeName, value) {
     });
 }
 
+function getKeyOfExistingSubject(subject) {
+    return new Promise((resolve, reject) => {
+        const request = getDBRequest(reject);
+        request.onsuccess = (event) => {
+            const db = event.target.result;
+            const transaction = db.transaction("Subjects", "readonly");
+            const objectStore = transaction.objectStore("Subjects");
+            const objectStoreRequest = objectStore.getAll();
+            objectStoreRequest.onsuccess = (event) => {
+                const result = event.target.result;
+                result.some((e) => {
+                    if (e.name === subject) {
+                        resolve(e.id);
+                        return true;
+                    }
+                });
+            }
+            objectStoreRequest.onerror = reject;
+        };
+    });
+}
 function checkIfSubjectExists(subject) {
     return new Promise((resolve, reject) => {
         const request = getDBRequest(reject);

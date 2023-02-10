@@ -1,6 +1,6 @@
 body{
-    background-color:lightslategray;
-    color:black;
+    background-color:#1C1C1C;
+    color:white;
     width: 30em;
 }
 
@@ -29,7 +29,7 @@ h1{
     padding: 1em;
     position: relative;
 }
-.input_field{
+#search_input{
     margin: 0;
     width: 15em;
     height: 30px;
@@ -38,12 +38,19 @@ h1{
     border-bottom-left-radius: 0.5em;
 
 }
-.search_button{
+#search_button{
+    vertical-align: middle;
+}
+
+#reload_button{
     vertical-align: middle;
     border-top-right-radius: 0.5em;
     border-bottom-right-radius: 0.5em;
 }
-
+#clear-button{
+    float: right;
+    vertical-align: middle;
+}
 
 #result-container{
     overflow-y: scroll;
@@ -56,6 +63,6 @@ h1{
     display: none; /* Chrome, Safari, Opera*/
 }
 
-#prev-button{
+#prev-button,#clear-button{
     visibility: hidden;
 }

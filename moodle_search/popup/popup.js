@@ -65,6 +65,7 @@ function showPrevTable(){
             document.getElementById("prev-button").style.visibility = "hidden";
             document.getElementById("clear-button").style.visibility = "hidden";
             break;
+
     }
 }
 
@@ -78,7 +79,6 @@ async function showSubjectsFromQuery(query){
 async function showSubjects(subjects, query) {
     document.getElementById("prev-button").style.visibility = "visible";
     document.getElementById("clear-button").style.visibility = "visible";
-    
     currentTableLevel = 1;
     createTable(subjects.map((subject)=>
         [

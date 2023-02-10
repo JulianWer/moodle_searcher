@@ -9,7 +9,13 @@ _browser.runtime.onMessage.addListener(
         switch (message.name) {
             case "downloadSubject":
                 storeSubject(message.subject).then(
-                    (subjectID) => dowloadAllPdfs(message.urls, subjectID)
+                    async(subjectID) => {
+                        if(await checkIfSubjectExists(message.subject)){
+                            dowloadAllPdfs(message.urls, await getKeyOfExistingSubject(message.subject));
+                        }else{
+                            dowloadAllPdfs(message.urls, subjectID);
+                        }
+                    }
                 );
                 break;
             default:
@@ -48,6 +54,27 @@ function storeData(storeName, value) {
     });
 }
 
+function getKeyOfExistingSubject(subject) {
+    return new Promise((resolve, reject) => {
+        const request = getDBRequest(reject);
+        request.onsuccess = (event) => {
+            const db = event.target.result;
+            const transaction = db.transaction("Subjects", "readonly");
+            const objectStore = transaction.objectStore("Subjects");
+            const objectStoreRequest = objectStore.getAll();
+            objectStoreRequest.onsuccess = (event) => {
+                const result = event.target.result;
+                result.some((e) => {
+                    if (e.name === subject) {
+                        resolve(e.id);
+                        return true;
+                    }
+                });
+            }
+            objectStoreRequest.onerror = reject;
+        };
+    });
+}
 function checkIfSubjectExists(subject) {
     return new Promise((resolve, reject) => {
         const request = getDBRequest(reject);

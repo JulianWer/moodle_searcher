@@ -67,6 +67,22 @@ function checkIfSubjectExists(subject) {
     });
 }
 
+function clearDatabase() {
+    return new Promise((resolve, reject) => {
+        const request = getDBRequest(reject);
+        request.onsuccess = (event) => {
+            const db = event.target.result;
+            const transaction = db.transaction(POSSIBLE_STORES, "readwrite");
+            for (let store of POSSIBLE_STORES) {
+                const objectStore = transaction.objectStore(store);
+                objectStore.clear();
+            }
+            transaction.oncomplete = resolve;
+            transaction.onerror = reject;
+        };
+    });
+}
+
 function getAllData (storeName, optionalWhereKeyValuePair = {}) {
     return new Promise((resolve, reject) => {
         const request = getDBRequest(reject);

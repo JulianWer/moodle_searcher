@@ -66,7 +66,7 @@ function checkIfSubjectExists(subject) {
     });
 }
 
-function clearDatabase() {
+export function clearDatabase() {
     return new Promise((resolve, reject) => {
         const request = getDBRequest(reject);
         request.onsuccess = (event) => {

@@ -2,7 +2,6 @@ import { getAllSubjectsOfQuery, getAllFilesFromSubjectOfQuery, getAllPagesFromFi
 import '../pdfjs-3.3.122-dist/build/pdf.js'
 pdfjsLib.GlobalWorkerOptions.workerSrc = '../pdfjs-3.3.122-dist/build/pdf.worker.js';
 
-
 // for cross browser support
 let _browser = typeof browser === "undefined" ? chrome : browser;
 console.log("popup is running");

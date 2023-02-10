@@ -56,6 +56,6 @@ h1{
     display: none; /* Chrome, Safari, Opera*/
 }
 
-#prev-button{
+#prev-button,#clear-button{
     visibility: hidden;
 }

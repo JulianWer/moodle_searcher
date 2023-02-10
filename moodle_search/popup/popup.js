@@ -1,4 +1,4 @@
-import { getAllSubjectsOfQuery, getAllFilesFromSubjectOfQuery, getAllPagesFromFileOfQuery } from './script.js';
+import { getAllSubjectsOfQuery, getAllFilesFromSubjectOfQuery, getAllPagesFromFileOfQuery, clearDatabase } from './script.js';
 import '../pdfjs-3.3.122-dist/build/pdf.js'
 pdfjsLib.GlobalWorkerOptions.workerSrc = '../pdfjs-3.3.122-dist/build/pdf.worker.js';
 
@@ -16,6 +16,10 @@ let cachedFiles = [];
 document.getElementById("reload_button").addEventListener("click", () => sendMessage("reloadMessage"));
 document.getElementById("search_button").addEventListener("click", () => showSubjectsFromQuery(getQuery()));
 document.getElementById("prev-button").addEventListener("click", () => showPrevTable());
+document.getElementById("clear-button").addEventListener("click", () => {
+    clearDatabase();
+    showSubjectsFromQuery(getQuery());
+});
 
 function clearDiv(elementID) {
     document.getElementById(elementID).innerHTML = "";
@@ -56,6 +60,7 @@ function showPrevTable(){
         case 0:
         default:
             document.getElementById("prev-button").style.visibility = "hidden";
+            document.getElementById("clear-button").style.visibility = "hidden";
             break;    
     }
 }
@@ -67,7 +72,7 @@ async function showSubjectsFromQuery(query){
 
 async function showSubjects(subjects, query) {
     document.getElementById("prev-button").style.visibility = "visible";
-
+    document.getElementById("clear-button").style.visibility = "visible";
     currentTableLevel = 1;
     createTable(subjects.map((subject)=>
         [

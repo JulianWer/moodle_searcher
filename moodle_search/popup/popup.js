@@ -9,20 +9,26 @@ console.log("popup is running");
 let currentTableLevel = 0; // 0 = empty, 1 = subjects, 2 = files, 3 = pages
 let currentSubject = null;
 
-let cachedSubjects = [];
-let cachedFiles = [];
-let cachedQuery = "";
+const CACHE = {
+    subjects: [],
+    files: [],
+    query: ""
+}
 
 document.getElementById("reload_button").addEventListener("click", () => sendMessage("reloadMessage"));
 document.getElementById("search_button").addEventListener("click", () => {
-    cachedQuery = getQuery();
-    showSubjectsFromQuery(cachedQuery);
+    updateQuery();
+    showSubjectsFromQuery();
 });
-document.getElementById("prev-button").addEventListener("click", () => showPrevTable());
+document.getElementById("prev-button").addEventListener("click", () => showPreviousTable());
 document.getElementById("clear-button").addEventListener("click", () => {
     clearDatabase();
-    showSubjectsFromQuery(getQuery());
+    showSubjectsFromQuery();
 });
+
+function updateQuery() {
+    CACHE.query = document.getElementById("search_input").value;
+}
 
 function clearDiv(elementID) {
     document.getElementById(elementID).innerHTML = "";
@@ -37,7 +43,7 @@ function createRow(name, onclick) {
     return row;
 }
 
-function createTable(valueAndEventList) {
+function showTable(valueAndEventList) {
     clearDiv("result-container");
     let table = document.createElement("table");
     table.setAttribute("id", "results_table");
@@ -46,97 +52,105 @@ function createTable(valueAndEventList) {
     document.getElementById("result-container").appendChild(table);
 }
 
-function showPrevTable(){
+function showPreviousTable() {
     clearDiv("result-container");
-    switch(currentTableLevel){
+    switch (currentTableLevel) {
         case 1:
             currentTableLevel = 0;
             break;
         case 2:
             currentTableLevel = 1;
-            showSubjects(cachedSubjects, cachedQuery);
+            showSubjects(CACHE.subjects);
             break;
         case 3:
             currentTableLevel = 2;
-            showFilesOfSubject(currentSubject, cachedFiles, cachedQuery);
+            showFilesOfSubject(currentSubject, CACHE.files);
             break;
         case 0:
         default:
-            document.getElementById("prev-button").style.visibility = "hidden";
-            document.getElementById("clear-button").style.visibility = "hidden";
+            hideButtons();
             break;
-
     }
 }
 
-async function showSubjectsFromQuery(query){
-    let subjects = await getAllSubjectsOfQuery(query);
-    console.log(subjects);
-    cachedSubjects = subjects;
-    showSubjects(subjects, query);
-}
-
-async function showSubjects(subjects, query) {
+function showButtons() {
     document.getElementById("prev-button").style.visibility = "visible";
     document.getElementById("clear-button").style.visibility = "visible";
+}
+
+function hideButtons() {
+    document.getElementById("prev-button").style.visibility = "hidden";
+    document.getElementById("clear-button").style.visibility = "hidden";
+}
+
+async function showSubjectsFromQuery() {
+    let subjects = await getAllSubjectsOfQuery(CACHE.query);
+    CACHE.subjects = subjects;
+    showSubjects(subjects);
+}
+
+function showSubjects(subjects) {
+    showButtons();
     currentTableLevel = 1;
-    createTable(subjects.map((subject)=>
-        [
-            subject.name, 
-            () => showFilesOfSubjectFromQuery(subject, query)
-        ]
-    ));
+    showTable(subjects.map((subject) => [
+        subject.name,
+        () => showFilesOfSubjectFromQuery(subject)
+    ]));
 }
 
-async function showFilesOfSubjectFromQuery(subject, query) {
-    let files = await getAllFilesFromSubjectOfQuery(subject, query);
-    cachedFiles = files;
-    showFilesOfSubject(currentSubject, files, query);
+async function showFilesOfSubjectFromQuery(subject) {
+    let files = await getAllFilesFromSubjectOfQuery(subject, CACHE.query);
+    CACHE.files = files;
+    showFilesOfSubject(currentSubject, files);
 }
 
-async function showFilesOfSubject(subject, files, query){
+async function showFilesOfSubject(subject, files) {
     currentSubject = subject,
-    currentTableLevel = 2;
-    createTable(files.map((file) =>
-        [
-            file.name,
-            () => {
-                clearDiv("result-container");
-                currentTableLevel = 3;
-                renderPages(file, query);
-            }
-        ]
-    ));
+        currentTableLevel = 2;
+    showTable(files.map((file) => [
+        file.name,
+        () => {
+            clearDiv("result-container");
+            currentTableLevel = 3;
+            showFile(file);
+        }
+    ]));
 }
 
-function renderPages(file, query){
-    getAllPagesFromFileOfQuery(file, query).then((pages)=>{
-        console.log(pages);
+function showFile(file) {
+    getAllPagesFromFileOfQuery(file, CACHE.query).then((pages) => {
         if (pages.length > 0) {
-            pdfjsLib.getDocument(file.url).promise.then((pdf) => {
-                for (let page of pages) {
-                    renderPage(pdf, 1+parseInt(page.pageNumber), file.url);
-                }
-            });
+            renderPages(pages, file)
+        }
+    });
+}
+
+function renderPages(pages, file) {
+    pdfjsLib.getDocument(file.url).promise.then((pdf) => {
+        for (let page of pages) {
+            renderPage(pdf, 1 + parseInt(page.pageNumber), file.url);
         }
     });
 }
 
 function renderPage(pdf, pageNumber, fileUrl) {
     pdf.getPage(pageNumber).then(function (page) {
-        var viewport = page.getViewport({ scale: 1.0 });
-        var canvas = document.createElement("canvas");
-        var context = canvas.getContext('2d');
-        canvas.height = viewport.height;
-        canvas.width = viewport.width;
+        let viewport = page.getViewport({ scale: 1.0 });
+        let canvas = getCanvas(viewport.width, viewport.height, () => window.open(fileUrl + "#page=" + pageNumber));
         document.getElementById("result-container").appendChild(canvas);
-        canvas.onclick = () => { window.open(fileUrl + "#page=" + pageNumber) }
-        let renderContext = { canvasContext: context, viewport: viewport };
-        let renderTask = page.render(renderContext);
-        renderTask.promise.then(function () {
-            console.log('Page rendered');
+        page.render({
+            canvasContext: canvas.getContext('2d'),
+            viewport: viewport
         });
     });
+}
+
+function getCanvas(width, height, onclickHandler) {
+    var canvas = document.createElement("canvas");
+    canvas.height = height;
+    canvas.width = width;
+    canvas.onclick = onclickHandler
+    return canvas;
 }
 
 function sendMessage(name, data = {}, response_handler = null) {
@@ -144,8 +158,4 @@ function sendMessage(name, data = {}, response_handler = null) {
         data["name"] = name;
         _browser.tabs.sendMessage(tabs[0].id, data, response_handler);
     });
-}
-
-function getQuery() {
-    return document.getElementById("search_input").value;
 }

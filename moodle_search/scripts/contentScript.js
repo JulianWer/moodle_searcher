@@ -6,9 +6,7 @@ _browser.runtime.onMessage.addListener(
   (message, _, sendResponse) => {
     switch (message.name) {
       case "reloadMessage":
-        let heading = getHeading();
-        let urls = getArrayOfCorrectPdfUrls();
-        sendMessage("downloadSubject", {subject: heading, urls: urls});  
+        sendMessage("downloadSubject", { subject: getHeading(), files: getArrayOfCorrectPdfUrls() });
         break;
       default:
         console.error("Message not found");
@@ -34,29 +32,14 @@ function getArrayOfCorrectPdfUrls() {
   }
   function formatLink(a) {
     return {
-      link: a.href,
+      url: a.href,
       key: a.innerText
     }
   }
   return links.filter(isLinkToPDF).map(formatLink);
 }
 
-function sendMessage(name, data = {}, response_handler = null){    
+function sendMessage(name, data = {}, response_handler = null) {
   data.name = name;
   _browser.runtime.sendMessage(data, response_handler);
 }
-
-/*
-PDF IFrame
-const iframeDocument = document.getElementById('pdf-js-viewer').contentWindow;
-let searchText = "TheTextYouWantoToHighlight";
-
-iframeDocument.PDFViewerApplication.pdfViewer.findController.executeCommand('find', {
-    caseSensitive: false, 
-    findPrevious: undefined,
-    highlightAll: true, 
-    phraseSearch: true, 
-    query: searchText
-})
-*/
-

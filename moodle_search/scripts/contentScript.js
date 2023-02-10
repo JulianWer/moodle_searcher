@@ -26,8 +26,11 @@ function getHeading() {
 function getArrayOfCorrectPdfUrls() {
   const links = Array.from(document.querySelectorAll("a.aalink"));
   const regex = new RegExp("moodle.hs-mannheim.de/mod/resource");
-  function isLink(a) {
-    return a.href.search(regex) > 0;
+  function isLinkToPDF(a) {
+    function childIsPdfImg(child) {
+      return child.nodeName === "IMG" && child.src.includes("pdf-24");
+    }
+    return childIsPdfImg(a.firstChild) && a.href.search(regex) > 0;
   }
   function formatLink(a) {
     return {
@@ -35,7 +38,7 @@ function getArrayOfCorrectPdfUrls() {
       key: a.innerText
     }
   }
-  return links.filter(isLink).map(formatLink);
+  return links.filter(isLinkToPDF).map(formatLink);
 }
 
 function sendMessage(name, data = {}, response_handler = null){    

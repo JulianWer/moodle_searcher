@@ -1,5 +1,5 @@
 body{
-    background-color:white;
+    background-color:lightslategray;
     color:black;
     width: 30em;
 }
@@ -8,6 +8,11 @@ body{
     float: left;
     height: 3em;
     margin: 1em;
+}
+
+canvas{
+    float: center;
+    width: 30em;
 }
 h1{
     vertical-align: sub;

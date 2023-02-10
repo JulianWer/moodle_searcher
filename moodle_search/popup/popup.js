@@ -72,9 +72,7 @@ async function showSubjects(query) {
 async function showFilesOfSubject(subject, query){
     currentSubject = subject,
     currentTableLevel = 2;
-    console.log("showFilesOfSubject");
     let files = await getAllFilesFromSubjectOfQuery(subject, query);
-    console.log(files);
     createTable(files.map((file) =>
         [
             file.name,
@@ -88,14 +86,11 @@ async function showFilesOfSubject(subject, query){
 }
 
 function renderPages(page, originalFileUrl) {
-    //console.log("handlePages");
-    //console.log(page);
     var viewport = page.getViewport({ scale: 1.0 });
     var canvas = document.createElement("canvas");
     var context = canvas.getContext('2d');
     canvas.height = viewport.height;
     canvas.width = viewport.width;
-    console.log(canvas);
     document.getElementById("result-container").appendChild(canvas);
     canvas.onclick = () => { window.open(originalFileUrl + "#page=" + page._pageIndex) }
     let renderContext = { canvasContext: context, viewport: viewport };

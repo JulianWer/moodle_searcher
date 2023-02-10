@@ -55,3 +55,7 @@ h1{
 #result-container::-webkit-scrollbar {
     display: none; /* Chrome, Safari, Opera*/
 }
+
+#prev-button{
+    visibility: hidden;
+}

@@ -37,7 +37,6 @@ function createTable(valueAndEventList) {
 
 function showPrevTable(){
     clearDiv("result-container");
-    console.log("showPrevTable"+currentTableLevel);
     switch(currentTableLevel){
         case 1:
             currentTableLevel = 0;
@@ -52,11 +51,14 @@ function showPrevTable(){
             break;
         case 0:
         default:
-                break;    
+            document.getElementById("prev-button").style.visibility = "hidden";
+            break;    
     }
 }
 
 async function showSubjects(query) {
+    document.getElementById("prev-button").style.visibility = "visible";
+
     let subjects = await getAllSubjectsOfQuery(query);
     currentTableLevel = 1;
     createTable(subjects.map((subject)=>
@@ -70,7 +72,9 @@ async function showSubjects(query) {
 async function showFilesOfSubject(subject, query){
     currentSubject = subject,
     currentTableLevel = 2;
+    console.log("showFilesOfSubject");
     let files = await getAllFilesFromSubjectOfQuery(subject, query);
+    console.log(files);
     createTable(files.map((file) =>
         [
             file.name,

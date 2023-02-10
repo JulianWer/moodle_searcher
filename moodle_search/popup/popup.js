@@ -1,4 +1,4 @@
-import { getAllSubjectsOfQuery, getAllFilesFromSubjectOfQuery, getAllPagesFromFileOfQuery } from './script.js';
+import { getAllSubjectsOfQuery, getAllFilesFromSubjectOfQuery, getAllPagesFromFileOfQuery, clearDatabase } from './script.js';
 import '../pdfjs-3.3.122-dist/build/pdf.js'
 pdfjsLib.GlobalWorkerOptions.workerSrc = '../pdfjs-3.3.122-dist/build/pdf.worker.js';
 
@@ -11,11 +11,18 @@ let currentSubject = null;
 
 let cachedSubjects = [];
 let cachedFiles = [];
-
+let cachedQuery = "";
 
 document.getElementById("reload_button").addEventListener("click", () => sendMessage("reloadMessage"));
-document.getElementById("search_button").addEventListener("click", () => showSubjectsFromQuery(getQuery()));
+document.getElementById("search_button").addEventListener("click", () => {
+    cachedQuery = getQuery();
+    showSubjectsFromQuery(cachedQuery);
+});
 document.getElementById("prev-button").addEventListener("click", () => showPrevTable());
+document.getElementById("clear-button").addEventListener("click", () => {
+    clearDatabase();
+    showSubjectsFromQuery(getQuery());
+});
 
 function clearDiv(elementID) {
     document.getElementById(elementID).innerHTML = "";
@@ -47,27 +54,31 @@ function showPrevTable(){
             break;
         case 2:
             currentTableLevel = 1;
-            showSubjects(cachedSubjects, getQuery());
+            showSubjects(cachedSubjects, cachedQuery);
             break;
         case 3:
             currentTableLevel = 2;
-            showFilesOfSubject(currentSubject, cachedFiles, getQuery());
+            showFilesOfSubject(currentSubject, cachedFiles, cachedQuery);
             break;
         case 0:
         default:
             document.getElementById("prev-button").style.visibility = "hidden";
-            break;    
+            document.getElementById("clear-button").style.visibility = "hidden";
+            break;
     }
 }
+
 async function showSubjectsFromQuery(query){
     let subjects = await getAllSubjectsOfQuery(query);
+    console.log(subjects);
     cachedSubjects = subjects;
     showSubjects(subjects, query);
 }
 
 async function showSubjects(subjects, query) {
     document.getElementById("prev-button").style.visibility = "visible";
-
+    document.getElementById("clear-button").style.visibility = "visible";
+    
     currentTableLevel = 1;
     createTable(subjects.map((subject)=>
         [
@@ -92,24 +103,39 @@ async function showFilesOfSubject(subject, files, query){
             () => {
                 clearDiv("result-container");
                 currentTableLevel = 3;
-                getAllPagesFromFileOfQuery(file, query).then((pages)=>pages.forEach((page)=>renderPages(page, file.url)));
+                renderPages(file, query);
             }
         ]
     ));
 }
 
-function renderPages(page, originalFileUrl) {
-    var viewport = page.getViewport({ scale: 1.0 });
-    var canvas = document.createElement("canvas");
-    var context = canvas.getContext('2d');
-    canvas.height = viewport.height;
-    canvas.width = viewport.width;
-    document.getElementById("result-container").appendChild(canvas);
-    canvas.onclick = () => { window.open(originalFileUrl + "#page=" + page._pageIndex) }
-    let renderContext = { canvasContext: context, viewport: viewport };
-    let renderTask = page.render(renderContext);
-    renderTask.promise.then(function () {
-        console.log('Page rendered');
+function renderPages(file, query){
+    getAllPagesFromFileOfQuery(file, query).then((pages)=>{
+        console.log(pages);
+        if (pages.length > 0) {
+            pdfjsLib.getDocument(file.url).promise.then((pdf) => {
+                for (let page of pages) {
+                    renderPage(pdf, 1+parseInt(page.pageNumber), file.url);
+                }
+            });
+        }
+    });
+}
+
+function renderPage(pdf, pageNumber, fileUrl) {
+    pdf.getPage(pageNumber).then(function (page) {
+        var viewport = page.getViewport({ scale: 1.0 });
+        var canvas = document.createElement("canvas");
+        var context = canvas.getContext('2d');
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+        document.getElementById("result-container").appendChild(canvas);
+        canvas.onclick = () => { window.open(fileUrl + "#page=" + pageNumber) }
+        let renderContext = { canvasContext: context, viewport: viewport };
+        let renderTask = page.render(renderContext);
+        renderTask.promise.then(function () {
+            console.log('Page rendered');
+        });
     });
 }
 

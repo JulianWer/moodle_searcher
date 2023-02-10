@@ -9,7 +9,13 @@ _browser.runtime.onMessage.addListener(
         switch (message.name) {
             case "downloadSubject":
                 storeSubject(message.subject).then(
-                    (subjectID) => dowloadAllPdfs(message.urls, subjectID)
+                    async(subjectID) => {
+                        if(await checkIfSubjectExists(message.subject)){
+                            dowloadAllPdfs(message.urls, await getKeyOfExistingSubject(message.subject));
+                        }else{
+                            dowloadAllPdfs(message.urls, subjectID);
+                        }
+                    }
                 );
                 break;
             default:
@@ -29,6 +35,27 @@ function getDBRequest(reject) {
         }
     });
     return request;
+}
+function getKeyOfExistingSubject(subject) {
+    return new Promise((resolve, reject) => {
+        const request = getDBRequest(reject);
+        request.onsuccess = (event) => {
+            const db = event.target.result;
+            const transaction = db.transaction("Subjects", "readonly");
+            const objectStore = transaction.objectStore("Subjects");
+            const objectStoreRequest = objectStore.getAll();
+            objectStoreRequest.onsuccess = (event) => {
+                const result = event.target.result;
+                result.some((e) => {
+                    if (e.name === subject) {
+                        resolve(e.id);
+                        return true;
+                    }
+                });
+            }
+            objectStoreRequest.onerror = reject;
+        };
+    });
 }
 
 function storeData(storeName, value) {
@@ -66,7 +93,7 @@ function checkIfSubjectExists(subject) {
     });
 }
 
-function clearDatabase() {
+export function clearDatabase() {
     return new Promise((resolve, reject) => {
         const request = getDBRequest(reject);
         request.onsuccess = (event) => {
@@ -119,40 +146,28 @@ function getData(storeName, key) {
     });
 }
 
-
 function dowloadAllPdfs(urls, subjectID) {
-    function downloadFile(url) {
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", url.link);
-        xhr.responseType = "blob";
-        xhr.onload = function () {
-            if (xhr.status && xhr.status === 200) {
-                saveFile(xhr.response, url, subjectID);
-            }
-        }
-        xhr.send();
-    }
     for (let i of urls) {
-        downloadFile(i);
+        saveFile(i, subjectID);
     }
 }
 
-function saveFile(pdf, url, subjectID) {
-    var fileReader = new FileReader();
-    fileReader.onload = function (evt) {
-        var result = evt.target.result;
+function saveFile(url, subjectID) {
+    async function getTextOfPage(page) {
+        return (await page.getTextContent()).items.map((i) => i.str).join(" ");
+    }
+    getAllPagesFromFile(url).then(async (pages) => {
         storeData(POSSIBLE_STORES[1], {
             name: url.key,
             url: url.link,
-            data: result,
+            data: await Promise.all((await pages).map(getTextOfPage)),
             subjectID: subjectID
         }).then(() => {
             console.log("Data stored successfully");
         }).catch((error) => {
             console.error("Error storing data:", error);
         });
-    };
-    fileReader.readAsDataURL(pdf);
+    });
 }
 
 async function storeSubject(subject) {
@@ -162,7 +177,7 @@ async function storeSubject(subject) {
 }
 
 async function getAllPagesFromFile(file) {
-    let pdf = await pdfjsLib.getDocument(file.data).promise;
+    let pdf = await pdfjsLib.getDocument(file.link).promise;
     let pages = [];
     for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
         pages.push(await pdf.getPage(pageNumber));
@@ -178,18 +193,14 @@ async function getAllSubjects() {
     return await getAllData(POSSIBLE_STORES[0]);
 }
 
-async function getTextOfPage(page) {
-    return (await page.getTextContent()).items.map((i) => i.str).join(" ");
-}
-
-async function pageMatchesQuery(page, query) {
+function pageMatchesQuery(pageText, query) {
     // TODO create query language options (OR, AND, NOT, ..., Case Sesnsitive etc)
-    return  (await getTextOfPage(page)).toLowerCase().replace(" ", "").includes(query.toLowerCase().replace(" ", ""));
+    return  pageText.toLowerCase().replace(" ", "").includes(query.toLowerCase().replace(" ", ""));
 }
 
-async function fileMatchesQuery(file, query) {
-    for (const page of await getAllPagesFromFile(file)) {
-        if (await pageMatchesQuery(page, query)) {
+function fileMatchesQuery(file, query) {
+    for (const page of file.data) {
+        if (pageMatchesQuery(page, query)) {
             return true;
         }
     }
@@ -197,8 +208,10 @@ async function fileMatchesQuery(file, query) {
 }
 
 async function subjectMatchesQuery(subject, query) {
-    for await (const file of await getAllFilesOfSubject(subject)) {
-        if (await fileMatchesQuery(file, query)) {
+
+    for (const file of await getAllFilesOfSubject(subject)) {
+        console.log(file);
+        if (fileMatchesQuery(file, query)) {
             return true;
         }
     }
@@ -206,40 +219,40 @@ async function subjectMatchesQuery(subject, query) {
 }
 
 export async function getAllPagesFromFileOfQuery(file, query) {
-    return new Promise(async (resolve, reject) => {
+    return new Promise((resolve, reject) => {
         let pages = [];
-        for (let page of (await getAllPagesFromFile(file))) {
-            if (await pageMatchesQuery(page, query)) {
-                pages.push(page);
+        for (let [pageNumber, page] of Object.entries(file.data)) {
+            if (pageMatchesQuery(page, query)) {
+                console.log(pageNumber);
+                pages.push({pageNumber: pageNumber, pageText: page});
             }
         }
         resolve(pages);
     });
-    //return (await getAllPagesFromFile(file)).filter(async (page) => await pageMatchesQuery(page, query));
 }
 
 export async function getAllFilesFromSubjectOfQuery(subject, query) {
     return new Promise(async (resolve, reject) => {
         let files = [];
         for (let file of (await getAllFilesOfSubject(subject))) {
-            if (await fileMatchesQuery(file, query)) {
+            if (fileMatchesQuery(file, query)) {
                 files.push(file);
             }
         }
         resolve(files);
     });
-    // return (await getAllFilesOfSubject(subject)).filter(async (file) => await fileMatchesQuery(file, query));
 }
 
 export async function getAllSubjectsOfQuery(query) {
     return new Promise(async (resolve, reject) => {
         let subjects = [];
         for (let subject of (await getAllSubjects())) {
+            console.log(subject);
             if (await subjectMatchesQuery(subject, query)) {
+                console.log("Subject matches query");
                 subjects.push(subject);
             }
         }
         resolve(subjects);
     });
-    //return (await getAllSubjects()).filter(async (subject) => await subjectMatchesQuery(subject, query));
 }

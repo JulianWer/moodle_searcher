@@ -23,6 +23,11 @@ const POSSIBLE_STORES = ["Subjects", "Files"];
 function getDBRequest(reject) {
     const request = window.indexedDB.open(DBNAME, 1);
     request.onerror = reject;
+    request.onupgradeneeded = (event => {
+        for (let store of POSSIBLE_STORES) {
+            event.target.result.createObjectStore(store, { keyPath: "id", autoIncrement: true });
+        }
+    });
     return request;
 }
 
@@ -39,11 +44,6 @@ function storeData(storeName, value) {
             objectStoreRequest.onsuccess = (event) => {
                 resolve(event.target.result);
             }
-        };
-        request.onupgradeneeded = (event) => {
-            const db = event.target.result;
-            for (let store of POSSIBLE_STORES)
-                db.createObjectStore(store, { keyPath: "id", autoIncrement: true });
         };
     });
 }

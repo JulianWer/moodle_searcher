@@ -49,6 +49,24 @@ function storeData(storeName, value) {
     });
 }
 
+function checkIfSubjectExists(subject) {
+    return new Promise((resolve, reject) => {
+        const request = getDBRequest(reject);
+        request.onsuccess = (event) => {
+            const db = event.target.result;
+            const transaction = db.transaction("Subjects", "readonly");
+            const objectStore = transaction.objectStore("Subjects");
+            const objectStoreRequest = objectStore.getAll();
+            objectStoreRequest.onsuccess = (event) => {
+                const result = event.target.result;
+                const subjectExists = result.some((e) => e.name === subject);
+                resolve(subjectExists);
+            }
+            objectStoreRequest.onerror = reject;
+        };
+    });
+}
+
 function getAllData (storeName, optionalWhereKeyValuePair = {}) {
     return new Promise((resolve, reject) => {
         const request = getDBRequest(reject);

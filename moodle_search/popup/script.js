@@ -33,7 +33,6 @@ function storeData(storeName, value) {
             const db = event.target.result;
             const transaction = db.transaction(storeName, "readwrite");
             const objectStore = transaction.objectStore(storeName);
-            console.log(value);
             const objectStoreRequest = objectStore.put(value);
             objectStoreRequest.onsuccess = resolve;
             objectStoreRequest.onerror = reject;
@@ -61,7 +60,6 @@ function checkIfSubjectExists(subject) {
                 const result = event.target.result;
                 const subjectExists = result.some((e) => e.name === subject);
                 resolve(subjectExists);
-                console.log(subjectExists);
             }
             objectStoreRequest.onerror = reject;
         };
@@ -123,7 +121,6 @@ function getData(storeName, key) {
 
 
 function dowloadAllPdfs(urls, subjectID) {
-    console.log(urls);
     function downloadFile(url) {
         var xhr = new XMLHttpRequest();
         xhr.open("GET", url.link);
@@ -186,23 +183,22 @@ async function getTextOfPage(page) {
 }
 
 async function pageMatchesQuery(page, query) {
-    return false;
     // TODO create query language options (OR, AND, NOT, ..., Case Sesnsitive etc)
-    return (await getTextOfPage(page)).toLowerCase().replace(" ", "").includes(query.toLowerCase().replace(" ", ""));
+    return  (await getTextOfPage(page)).toLowerCase().replace(" ", "").includes(query.toLowerCase().replace(" ", ""));
 }
 
 async function fileMatchesQuery(file, query) {
-    return containsFilter(await getAllPagesFromFile(file), async (page) => await pageMatchesQuery(page, query));
+    for await (const page of await getAllPagesFromFile(file)) {
+        if (await pageMatchesQuery(page, query)) {
+            return true;
+        }
+    }
+    return false;
 }
 
 async function subjectMatchesQuery(subject, query) {
-    return containsFilter(await getAllFilesOfSubject(subject), async (file) => await fileMatchesQuery(file, query));
-}
-
-async function containsFilter(iter, filter) {
-    // returns true if filter is true for at least one element of iter
-    for (let i of iter) {
-        if (await filter(await i)) {
+    for await (const file of await getAllFilesOfSubject(subject)) {
+        if (await fileMatchesQuery(file, query)) {
             return true;
         }
     }
@@ -210,13 +206,40 @@ async function containsFilter(iter, filter) {
 }
 
 export async function getAllPagesFromFileOfQuery(file, query) {
-    return (await getAllPagesFromFile(file)).filter(async (page) => await pageMatchesQuery(page, query));
+    return new Promise(async (resolve, reject) => {
+        let pages = [];
+        for (let page of (await getAllPagesFromFile(file))) {
+            if (await pageMatchesQuery(page, query)) {
+                pages.push(page);
+            }
+        }
+        resolve(pages);
+    });
+    //return (await getAllPagesFromFile(file)).filter(async (page) => await pageMatchesQuery(page, query));
 }
 
 export async function getAllFilesFromSubjectOfQuery(subject, query) {
-    return (await getAllFilesOfSubject(subject)).filter(async (file) => await fileMatchesQuery(file, query));
+    return new Promise(async (resolve, reject) => {
+        let files = [];
+        for (let file of (await getAllFilesOfSubject(subject))) {
+            if (await fileMatchesQuery(file, query)) {
+                files.push(file);
+            }
+        }
+        resolve(files);
+    });
+    // return (await getAllFilesOfSubject(subject)).filter(async (file) => await fileMatchesQuery(file, query));
 }
 
 export async function getAllSubjectsOfQuery(query) {
-    return (await getAllSubjects()).filter(async (subject) => await subjectMatchesQuery(subject, query));
+    return new Promise(async (resolve, reject) => {
+        let subjects = [];
+        for (let subject of (await getAllSubjects())) {
+            if (await subjectMatchesQuery(subject, query)) {
+                subjects.push(subject);
+            }
+        }
+        resolve(subjects);
+    });
+    //return (await getAllSubjects()).filter(async (subject) => await subjectMatchesQuery(subject, query));
 }

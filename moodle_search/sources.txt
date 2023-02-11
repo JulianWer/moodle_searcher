@@ -3,3 +3,8 @@ https://fonts.google.com/icons
 https://www.oxabox.com/wp-content/uploads/2020/05/L4HJ0qyd_400x400.png
 
 https://moodle.org/theme/moodleorg/pix/moodle_logo_TM.svg
+
+logo:  https://express.adobe.com/sp/design/post/urn:aaid:sc:EU:d65cdb09-5598-4a48-9e26-532813116cd4
+       https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn.icon-icons.com%2Ficons2%2F2415%2FPNG%2F512%2Fmoodle_original_logo_icon_146420.png&f=1&nofb=1&ipt=e3c67732c95c66025d93076ef48f151d16e297cc624fd2ccef95de42ae4d5f75&ipo=images 
+
+       

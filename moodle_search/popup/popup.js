@@ -15,8 +15,8 @@ const CACHE = {
     query: ""
 }
 
-document.getElementById("reload_button").addEventListener("click", () => sendMessage("reloadMessage"));
-document.getElementById("search_button").addEventListener("click", () => {
+document.getElementById("reload-button").addEventListener("click", () => sendMessage("reloadMessage"));
+document.getElementById("search-button").addEventListener("click", () => {
     updateQuery();
     showSubjectsFromQuery();
 });
@@ -27,7 +27,7 @@ document.getElementById("clear-button").addEventListener("click", () => {
 });
 
 function updateQuery() {
-    CACHE.query = document.getElementById("search_input").value;
+    CACHE.query = document.getElementById("search-input").value;
 }
 
 function clearDiv(elementID) {

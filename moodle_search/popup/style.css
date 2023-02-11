@@ -1,22 +1,32 @@
-body{
-    background-color:#1C1C1C;
-    color:white;
+body {
+    background-color: #1C1C1C;
+    color: white;
     width: 30em;
 }
 
-#moodle_logo{
+button {
+    cursor: pointer;
+}
+
+.search-group {
+    display: flex;
+    flex-direction: row;
+    margin: 1em;
+    padding: 1em;
+    position: relative;
+    align-items: center;
+}
+
+.moodle-logo {
     float: left;
     height: 3em;
     margin: 1em;
 }
 
-canvas{
-    float: center;
-    width: 30em;
-}
-h1{
+h1 {
     vertical-align: sub;
 }
+
 .header {
     padding: 0.1em;
     position: relative;
@@ -24,12 +34,13 @@ h1{
 }
 
 
-.search{
+.search {
     margin: 1em;
     padding: 1em;
     position: relative;
 }
-#search_input{
+
+.search-input {
     margin: 0;
     width: 15em;
     height: 30px;
@@ -38,31 +49,48 @@ h1{
     border-bottom-left-radius: 0.5em;
 
 }
-#search_button{
+
+.search-button {
     vertical-align: middle;
 }
 
-#reload_button{
+.reload-button {
     vertical-align: middle;
     border-top-right-radius: 0.5em;
     border-bottom-right-radius: 0.5em;
 }
-#clear-button{
+
+.clear-button {
     float: right;
     vertical-align: middle;
 }
 
-#result-container{
+.prev-button,
+.clear-button {
+    visibility: hidden;
+}
+
+.result-container {
     overflow-y: scroll;
     height: 70%;
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE and Edge */
 }
 
-#result-container::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, Opera*/
+.result-container::-webkit-scrollbar {
+    display: none;
+    /* Chrome, Safari, Opera*/
 }
 
-#prev-button,#clear-button{
-    visibility: hidden;
+
+table td {
+    cursor: pointer;
+}
+
+canvas {
+    float: center;
+    width: 30em;
+    cursor: pointer;
 }

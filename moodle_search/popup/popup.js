@@ -26,6 +26,27 @@ document.getElementById("clear-button").addEventListener("click", () => {
     showSubjectsFromQuery();
 });
 
+let checkb = document.getElementById("theme-toggle");
+
+checkb.addEventListener("change", function(e) {
+    if (this.checked) {
+        setDarkMode();
+    } else {
+        setLightMode();
+    }
+});
+
+function setDarkMode() {
+    document.body.style.backgroundColor = "#1C1C1C";
+    document.body.style.color = "white";
+    document.getElementById("moodle-logo").src = "../images/logo_dark.png";
+}
+function setLightMode() {
+    document.body.style.backgroundColor = "white";
+    document.body.style.color = "black";
+    document.getElementById("moodle-logo").src = "../images/logo_light.png";
+}
+
 function updateQuery() {
     CACHE.query = document.getElementById("search-input").value;
 }

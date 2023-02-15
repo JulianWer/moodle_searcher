@@ -121,13 +121,14 @@ function showButtons() { // TODO rename
     let button = document.getElementById("prev-button");
     button.disabled = false;
     button.classList.remove("disabled");
-
+    button.style.cursor = "pointer";
 }
 
 function hideButtons() { // TODO rename
     let button = document.getElementById("prev-button");
     button.disabled = true;
     button.classList.add("disabled");
+    button.style.cursor = "default";
 }
 
 async function showSubjectsFromQuery() {

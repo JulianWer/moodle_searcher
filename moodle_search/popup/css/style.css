@@ -1,9 +1,8 @@
 body {
     background-color: white;
     color: black;
-    width: 30em;
-    min-height: 20em;
-    padding:0;
+    width: 33.5em;
+    padding: 0;
     margin: 0;
 }
 
@@ -19,7 +18,7 @@ button {
 }
 
 .header * {
-    margin:0;
+    margin: 0;
 }
 
 .moodle-logo {
@@ -34,55 +33,60 @@ button {
 }
 
 #nav-buttons-container {
-    position: fixed;
-    bottom: 5vw;
     width: 90%;
-    margin: 0 5vw;
+    margin: 5vw;
     grid-template-columns: 15% auto 15%;
     display: grid;
 }
-
 
 /* Disabled */
 button[disabled] {
     opacity: 0.5;
 }
 
-
-#result-container {
-    padding:0;
-    margin:auto;
-    width:100%;
+.no-scrollbar, .no-scrollbar * {
     overflow-y: scroll;
-    scrollbar-width: none;
     /* Firefox */
-    -ms-overflow-style: none;
+    scrollbar-width: none;
     /* IE and Edge */
+    -ms-overflow-style: none;
 }
 
-#result-container::-webkit-scrollbar {
-    display: none;
-
+.no-scrollbar::-webkit-scrollbar, .no-scrollbar *::-webkit-scrollbar {
     /* Chrome, Safari, Opera*/
-}
-
-
-table td {
-    cursor: pointer;
+    display: none;
 }
 
 canvas {
     width: 30em;
     cursor: pointer;
-}
-
-#content-list{
-    list-style-type: none;
-   /* height: fit-content; */
-    width: 85%;
     margin: auto;
 }
 
-#content-list li{
-   
+#subject-container, #files-container, #pages-container {
+    max-height: 31em; /* TODO discuss max height */
+    margin: 5% 5% 0 5%;
+    height: max-content !important;
+    padding: 0;
+}
+
+.content-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.content-list:hover {
+    transform: none;
+}
+
+.content-list li {
+    text-align: left;
+    padding: 12px;
+    cursor: pointer;
+}
+
+.content-list > li:not(:last-child) {
+    /* selects every li:after except the last one*/
+    border-bottom: 1px solid lightgrey;
 }

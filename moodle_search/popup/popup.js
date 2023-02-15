@@ -1,7 +1,8 @@
 // TODO delete files before reload
 // TODO make darkmode-toggle persistent
 // TODO mark found words in pdfs
-// TODO hide/show prev-button logic isnt consistent
+// TODO add hints to hover of buttons
+// TODO show status of download (blink/rotate while not finished etc)
 
 import { getAllSubjectsOfQuery, getAllFilesFromSubjectOfQuery, getAllPagesFromFileOfQuery, clearDatabase } from './script.js';
 import '../pdfjs-3.3.122-dist/build/pdf.js'
@@ -11,8 +12,6 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = '../pdfjs-3.3.122-dist/build/pdf.worker
 let _browser = typeof browser === "undefined" ? chrome : browser;
 console.log("popup is running");
 
-let currentTableLevel = 0; // 0 = empty, 1 = subjects, 2 = files, 3 = pages
-let currentSubject = null;
 
 const CACHE = {
     subjects: [],
@@ -20,6 +19,14 @@ const CACHE = {
     query: ""
 }
 
+let currentActiveContainer = -1; // -1 = empty, 0 = subjects, 1 = files, 2 = pages
+let CONTENT_CONTAINERS = [
+    document.getElementById("subject-container"),
+    document.getElementById("files-container"),
+    document.getElementById("pages-container")
+];
+hideButtons();
+hideAllContainers();
 document.getElementById("reload-button").addEventListener("click", () => sendMessage("reloadMessage"));
 document.getElementById("search-button").addEventListener("click", async () => {
     await updateQuery();
@@ -40,6 +47,16 @@ checkb.addEventListener("change", function(_) {
         setLightMode();
     }
 });
+function hideAllContainers(){
+    for (let container of CONTENT_CONTAINERS){
+        container.style.display = "none";
+    }
+}
+
+function showContainer(_){
+    hideAllContainers();
+    CONTENT_CONTAINERS[currentActiveContainer].style.display = "block";
+}
 
 function setDarkMode() {
     document.body.style.backgroundColor = "#1C1C1C";
@@ -70,30 +87,32 @@ function createRow(name, onclick) {
 function showList(valueAndEventList, container_id) {
     clearDiv(container_id);
     let table = document.createElement("ul");
-    table.classList.add("content-list")
+    //table.classList.add("material-element");
+    table.classList.add("content-list");
+    table.classList.add("no-scrollbar");
     for (let [value, event] of valueAndEventList)
         table.appendChild(createRow(value, event));
-    document.getElementById(container_id).appendChild(table);
+    let container = document.getElementById(container_id);
+    container.appendChild(table);
+    hideAllContainers();
+    container.style.display = "block";
+
     // TODO show container with animation etc
 }
 
 function showPreviousTable() {
-    clearDiv("result-container");
-    switch (currentTableLevel) {
+    switch (currentActiveContainer) {
         case 1:
-            currentTableLevel = 0;
+            currentActiveContainer = 0;
+            showContainer("subjects-container");
             break;
         case 2:
-            currentTableLevel = 1;
-            showSubjects(CACHE.subjects);
+            currentActiveContainer = 1;
+            showContainer("files-container");
             break;
-        case 3:
-            currentTableLevel = 2;
-            showFilesOfSubject(currentSubject, CACHE.files);
-            break;
-        case 0:
         default:
             hideButtons();
+            hideAllContainers();
             break;
     }
 }
@@ -119,7 +138,7 @@ async function showSubjectsFromQuery() {
 
 function showSubjects(subjects) {
     showButtons();
-    currentTableLevel = 1;
+    currentActiveContainer = 0;
     showList(subjects.map((subject) => [
         subject.name,
         () => showFilesOfSubjectFromQuery(subject)
@@ -129,18 +148,14 @@ function showSubjects(subjects) {
 async function showFilesOfSubjectFromQuery(subject) {
     let files = await getAllFilesFromSubjectOfQuery(subject, CACHE.query);
     CACHE.files = files;
-    await showFilesOfSubject(currentSubject, files);
-}
-
-async function showFilesOfSubject(subject, files) {
-    currentSubject = subject;
-    currentTableLevel = 2;
+    currentActiveContainer = 1;
     showList(files.map((file) => [
         file.name,
         () => {
-            clearDiv("pages-container");
-            currentTableLevel = 3;
+            currentActiveContainer = 2;
+            clearDiv("pages-container")
             showFile(file);
+            showContainer("pages-container");
         }
     ]), "files-container");
 }

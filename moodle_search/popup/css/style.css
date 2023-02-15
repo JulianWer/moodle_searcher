@@ -49,10 +49,6 @@ button[disabled] {
 }
 
 
-#prev-button{
-    vertical-align: middle;
-}
-
 #result-container {
     padding:0;
     margin:auto;
@@ -76,7 +72,6 @@ table td {
 }
 
 canvas {
-    float: center;
     width: 30em;
     cursor: pointer;
 }

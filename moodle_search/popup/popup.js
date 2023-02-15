@@ -97,14 +97,17 @@ function showPreviousTable() {
     }
 }
 
-function showButtons() {
-    document.getElementById("prev-button").style.visibility = "visible";
-    document.getElementById("clear-button").style.visibility = "visible";
+function showButtons() { // TODO rename
+    let button = document.getElementById("prev-button");
+    button.disabled = false;
+    button.classList.remove("disabled");
+
 }
 
-function hideButtons() {
-    document.getElementById("prev-button").style.visibility = "hidden";
-    document.getElementById("clear-button").style.visibility = "hidden";
+function hideButtons() { // TODO rename
+    let button = document.getElementById("prev-button");
+    button.disabled = true;
+    button.classList.add("disabled");
 }
 
 async function showSubjectsFromQuery() {

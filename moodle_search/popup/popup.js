@@ -1,3 +1,8 @@
+// TODO delete files before reload
+// TODO make darkmode-toggle persistent
+// TODO mark found words in pdfs
+// TODO hide/show prev-button logic isnt consistent
+
 import { getAllSubjectsOfQuery, getAllFilesFromSubjectOfQuery, getAllPagesFromFileOfQuery, clearDatabase } from './script.js';
 import '../pdfjs-3.3.122-dist/build/pdf.js'
 pdfjsLib.GlobalWorkerOptions.workerSrc = '../pdfjs-3.3.122-dist/build/pdf.worker.js';

@@ -56,18 +56,16 @@ function clearDiv(elementID) {
 }
 
 function createRow(name, onclick) {
-    let row = document.createElement("tr");
-    let cell = document.createElement("td");
-    cell.onclick = onclick;
-    cell.appendChild(document.createTextNode(name));
-    row.appendChild(cell);
+    let row = document.createElement("li");
+    row.onclick = onclick;
+    row.appendChild(document.createTextNode(name));
     return row;
 }
 
-function showTable(valueAndEventList) {
+function showList(valueAndEventList) {
     clearDiv("result-container");
-    let table = document.createElement("table");
-    table.setAttribute("id", "results_table");
+    let table = document.createElement("ul");
+    table.setAttribute("id", "content-list");
     for (let [value, event] of valueAndEventList)
         table.appendChild(createRow(value, event));
     document.getElementById("result-container").appendChild(table);
@@ -113,7 +111,7 @@ async function showSubjectsFromQuery() {
 function showSubjects(subjects) {
     showButtons();
     currentTableLevel = 1;
-    showTable(subjects.map((subject) => [
+    showList(subjects.map((subject) => [
         subject.name,
         () => showFilesOfSubjectFromQuery(subject)
     ]));
@@ -127,8 +125,8 @@ async function showFilesOfSubjectFromQuery(subject) {
 
 async function showFilesOfSubject(subject, files) {
     currentSubject = subject,
-        currentTableLevel = 2;
-    showTable(files.map((file) => [
+    currentTableLevel = 2;
+    showList(files.map((file) => [
         file.name,
         () => {
             clearDiv("result-container");

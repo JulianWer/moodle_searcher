@@ -24,20 +24,20 @@
     border-radius: 0;
 }
 
-.material-element:hover {
+.material-button:hover {
     border: 2px solid lightgrey;
     box-shadow: 0 0 20px -17px;
 }
 
-.material-element:active {
+.material-button:active {
     transform: scale(0.95);
 }
 
-.material-element:focus {
+.material-button:focus {
     border: 2px solid grey;
 }
 
-.material-element[disabled] {
+.material-button[disabled] {
     transform: none;
     box-shadow: 0 0 0 0;
     border: 12px;

@@ -1,0 +1,44 @@
+
+/* Material Design Elements */
+.material-element {
+    height: 45px;
+    padding: 12px;
+    border: 2px solid lightgrey;
+    outline: none;
+    transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+    box-shadow: 0 0 20px -18px;
+    border-radius: 12px;
+}
+
+.material-left{
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.material-right{
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.material-center{
+    border-radius: 0;
+}
+
+.material-element:hover {
+    border: 2px solid lightgrey;
+    box-shadow: 0 0 20px -17px;
+}
+
+.material-element:active {
+    transform: scale(0.95);
+}
+
+.material-element:focus {
+    border: 2px solid grey;
+}
+
+.material-element[disabled] {
+    transform: none;
+    box-shadow: 0 0 0 0;
+    border: 12px;
+}

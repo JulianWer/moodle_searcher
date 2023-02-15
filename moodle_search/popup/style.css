@@ -11,127 +11,104 @@ button {
     cursor: pointer;
 }
 
-.search-group {
-    display: flex;
-    flex-direction: row;
-    margin: 1em;
-    padding: 1em;
+.header {
+    margin: 5%;
+    display: grid;
+    grid-template-columns: 15% auto 15%;
     position: relative;
-    align-items: center;
+}
+
+.header * {
+    margin:0;
 }
 
 .moodle-logo {
-    float: left;
     height: 3em;
-    margin: 1em;
 }
 
-h1 {
-    vertical-align: sub;
+.search-group {
+    width: 90%;
+    margin: auto;
+    grid-template-columns: auto 15% 15%;
+    display: grid;
 }
 
-.header {
-    padding: 0.1em;
-    position: relative;
-    white-space: nowrap;
+#nav-buttons-container {
+    position: fixed;
+    bottom: 5vw;
+    width: 90%;
+    margin: 0 5vw;
+    grid-template-columns: 15% auto 15%;
+    display: grid;
 }
 
-
-.search {
-    margin: 1em;
-    padding: 1em;
-    position: relative;
-}
-
-.search-input {
-    width: 100%;
-    max-width: 220px;
+/* Material Design Elements */
+.material-element {
     height: 45px;
     padding: 12px;
-    border-top-left-radius: 12px;
-    border-bottom-left-radius: 12px;
     border: 1.5px solid lightgrey;
     outline: none;
     transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
     box-shadow: 0px 0px 20px -18px;
-  }
-  
-  .search-input:hover {
+    border-radius: 12px;
+}
+
+.material-left{
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.material-right{
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.material-center{
+    border-radius: 0;
+}
+
+.material-element:hover {
     border: 2px solid lightgrey;
     box-shadow: 0px 0px 20px -17px;
-  }
-  
-  .search-input:active {
+}
+
+.material-element:active {
     transform: scale(0.95);
-  }
-  
-  .search-input:focus {
+}
+
+.material-element:focus {
     border: 2px solid grey;
-  }
+}
 
-.search-button {
-    background-color: white;
-    height: 45px;
-    padding: 12px;
-    border: 1.5px solid lightgrey;
-    outline: none;
-    transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
-    box-shadow: 0px 0px 20px -18px;
+/* Disabled */
+button[disabled] {
+    opacity: 0.5;
+}
+
+.material-element[disabled] {
+    transform: none;
+    box-shadow: 0px;
+    border: 12px;
+}
+
+#prev-button{
     vertical-align: middle;
 }
 
-.reload-button {
-    background-color: white;
-    height: 45px;
-    padding: 12px;
-    border-top-right-radius: 12px;
-    border-bottom-right-radius: 12px;
-    border: 1.5px solid lightgrey;
-    outline: none;
-    transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
-    box-shadow: 0px 0px 20px -18px;
-    vertical-align: middle;
-}
-
-.clear-button {
-    float: right;
-    vertical-align: middle;
-    background-color: white;
-    height: 45px;
-    padding: 12px;
-    border-radius: 12px;
-    border: 1.5px solid lightgrey;
-    outline: none;
-    transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
-    box-shadow: 0px 0px 20px -18px;
-}
-.prev-button{
-    background-color: white;
-    height: 45px;
-    padding: 12px;
-    border-radius: 12px;
-    border: 1.5px solid lightgrey;
-    outline: none;
-    transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
-    box-shadow: 0px 0px 20px -18px;
-    vertical-align: middle;
-}
-.prev-button,
-.clear-button {
-    visibility: hidden;
-}
-
-.result-container {
+#result-container {
+    padding:0;
+    margin:auto;
+    width:100%;
     overflow-y: scroll;
-    height: 70%;
     scrollbar-width: none;
     /* Firefox */
     -ms-overflow-style: none;
     /* IE and Edge */
 }
 
-.result-container::-webkit-scrollbar {
+#result-container::-webkit-scrollbar {
     display: none;
+
     /* Chrome, Safari, Opera*/
 }
 
@@ -144,4 +121,15 @@ canvas {
     float: center;
     width: 30em;
     cursor: pointer;
+}
+
+#content-list{
+    list-style-type: none;
+   /* height: fit-content; */
+    width: 85%;
+    margin: auto;
+}
+
+#content-list li{
+   
 }

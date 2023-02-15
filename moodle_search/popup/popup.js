@@ -21,19 +21,19 @@ const CACHE = {
 }
 
 document.getElementById("reload-button").addEventListener("click", () => sendMessage("reloadMessage"));
-document.getElementById("search-button").addEventListener("click", () => {
-    updateQuery();
-    showSubjectsFromQuery();
+document.getElementById("search-button").addEventListener("click", async () => {
+    await updateQuery();
+    await showSubjectsFromQuery();
 });
 document.getElementById("prev-button").addEventListener("click", () => showPreviousTable());
-document.getElementById("clear-button").addEventListener("click", () => {
-    clearDatabase();
-    showSubjectsFromQuery();
+document.getElementById("clear-button").addEventListener("click", async () => {
+    await clearDatabase();
+    await showSubjectsFromQuery();
 });
 
 let checkb = document.getElementById("theme-toggle");
 
-checkb.addEventListener("change", function(e) {
+checkb.addEventListener("change", function(_) {
     if (this.checked) {
         setDarkMode();
     } else {
@@ -67,13 +67,14 @@ function createRow(name, onclick) {
     return row;
 }
 
-function showList(valueAndEventList) {
-    clearDiv("result-container");
+function showList(valueAndEventList, container_id) {
+    clearDiv(container_id);
     let table = document.createElement("ul");
-    table.setAttribute("id", "content-list");
+    table.classList.add("content-list")
     for (let [value, event] of valueAndEventList)
         table.appendChild(createRow(value, event));
-    document.getElementById("result-container").appendChild(table);
+    document.getElementById(container_id).appendChild(table);
+    // TODO show container with animation etc
 }
 
 function showPreviousTable() {
@@ -122,26 +123,26 @@ function showSubjects(subjects) {
     showList(subjects.map((subject) => [
         subject.name,
         () => showFilesOfSubjectFromQuery(subject)
-    ]));
+    ]), "subject-container");
 }
 
 async function showFilesOfSubjectFromQuery(subject) {
     let files = await getAllFilesFromSubjectOfQuery(subject, CACHE.query);
     CACHE.files = files;
-    showFilesOfSubject(currentSubject, files);
+    await showFilesOfSubject(currentSubject, files);
 }
 
 async function showFilesOfSubject(subject, files) {
-    currentSubject = subject,
+    currentSubject = subject;
     currentTableLevel = 2;
     showList(files.map((file) => [
         file.name,
         () => {
-            clearDiv("result-container");
+            clearDiv("pages-container");
             currentTableLevel = 3;
             showFile(file);
         }
-    ]));
+    ]), "files-container");
 }
 
 function showFile(file) {
@@ -164,7 +165,7 @@ function renderPage(pdf, pageNumber, fileUrl) {
     pdf.getPage(pageNumber).then(function (page) {
         let viewport = page.getViewport({ scale: 1.0 });
         let canvas = getCanvas(viewport.width, viewport.height, () => window.open(fileUrl + "#page=" + pageNumber));
-        document.getElementById("result-container").appendChild(canvas);
+        document.getElementById("pages-container").appendChild(canvas);
         page.render({
             canvasContext: canvas.getContext('2d'),
             viewport: viewport
@@ -173,7 +174,7 @@ function renderPage(pdf, pageNumber, fileUrl) {
 }
 
 function getCanvas(width, height, onclickHandler) {
-    var canvas = document.createElement("canvas");
+    let canvas = document.createElement("canvas");
     canvas.height = height;
     canvas.width = width;
     canvas.onclick = onclickHandler

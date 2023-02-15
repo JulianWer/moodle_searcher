@@ -3,6 +3,8 @@
 // TODO mark found words in pdfs
 // TODO add hints to hover of buttons
 // TODO show status of download (blink/rotate while not finished etc)
+// TODO maybe add little arrow in each subject and file row
+// TODO show container with animation etc
 
 import { getAllSubjectsOfQuery, getAllFilesFromSubjectOfQuery, getAllPagesFromFileOfQuery, clearDatabase } from './script.js';
 import '../pdfjs-3.3.122-dist/build/pdf.js'
@@ -96,8 +98,6 @@ function showList(valueAndEventList, container_id) {
     container.appendChild(table);
     hideAllContainers();
     container.style.display = "block";
-
-    // TODO show container with animation etc
 }
 
 function showPreviousTable() {

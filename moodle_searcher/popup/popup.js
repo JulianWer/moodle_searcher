@@ -34,6 +34,12 @@ document.getElementById("search-button").addEventListener("click", async () => {
     await updateQuery();
     await showSubjectsFromQuery();
 });
+document.body.addEventListener('keypress', async (e) => {
+    if (e.key === 'Enter') {
+        await updateQuery();
+        await showSubjectsFromQuery();    
+    }
+});
 document.getElementById("prev-button").addEventListener("click", () => showPreviousTable());
 document.getElementById("clear-button").addEventListener("click", async () => {
     await clearDatabase();
@@ -184,14 +190,50 @@ async function highlightQueryOnRenderedPage(page) {
     let textContent = getTextOfPage(page);
     let queryIndex = (await textContent).indexOf(query);
     if (queryIndex > -1) {
-        var range = document.createRange();
-        range.setStart(page, queryIndex);//TODO page is not a node
-        range.setEnd(page, query.length);
-        var rects = range.getClientRects();
-        console.log(rects);
+        let queryLength = query.length;
+        let queryRects = await getRectsOfTextOnPage(page, queryIndex, queryLength);
+        console.log(queryRects);
+        for (let rect of queryRects) {
+            highlightRectOnCanvas(rect, page);
+        }
     }
 }
 
+function highlightRectOnCanvas(rect, page) { // TODO working wierdly
+    let canvas = document.getElementById("pages-container").lastChild;
+    let context = canvas.getContext("2d");
+    context.beginPath();
+    context.rect(rect.x, rect.y, rect.width, rect.height);
+    context.fillStyle = "yellow";
+    context.fill();
+}
+
+function getRectsOfTextOnPage(page, queryIndex, queryLength){ 
+    return page.getTextContent().then((textContent) => {
+        let rects = [];
+        let textItems = textContent.items;
+        for (let i = 0; i < textItems.length; i++) {
+            let textItem = textItems[i];
+            let text = textItem.str;
+            let textLength = text.length;
+            let textRect = textItem.transform;
+            if (queryIndex >= 0 && queryIndex < textLength) {
+                let rect = {
+                    x: textRect[4],
+                    y: textRect[5],
+                    width: textRect[0] * textLength,
+                    height: textRect[3]
+                };
+                rects.push(rect);
+                queryIndex = -1;
+            } else if (queryIndex >= textLength) {
+                queryIndex -= textLength;
+            }
+        }
+        return rects;
+    });
+
+}
 
 
 

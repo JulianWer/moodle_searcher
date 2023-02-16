@@ -1,0 +1,29 @@
+#moodle-url-container{
+    width: 90%;
+    margin: 5vw;
+    grid-template-columns: 70% 30%;
+    display: grid;
+    justify-content: space-between;
+}
+
+#theme-select-label{
+    height: auto;
+}
+
+#switch-container {
+    width: 90%;
+    margin: 5vw;
+    grid-template-columns: 40% 60%;
+    display: grid;
+    justify-content: space-between;
+}
+
+#close-button{
+    position: fixed;
+    top: 5vw;
+    right: 5vw;
+}
+
+h1, h2{
+    margin: 5vw;
+}

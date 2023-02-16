@@ -3,6 +3,7 @@
 
 <head>
     <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <link rel="stylesheet" type="text/css" href="css/settings.css" />
     <link rel="stylesheet" type="text/css" href="css/switch.css" />
     <link rel="stylesheet" type="text/css" href="css/material.css" />
     <title>Settings</title>
@@ -10,20 +11,29 @@
 
 <body>
     <h1>Settings</h1>
-
+    <a href="index.html" id="close-button">
+        <button class="material-element material-button">
+            <svg xmlns="http://www.w3.org/2000/svg" height="20" width="20">
+                <path d="M6.062 15 5 13.938 8.938 10 5 6.062 6.062 5 10 8.938 13.938 5 15 6.062 11.062 10 15 13.938 13.938 15 10 11.062Z" />
+            </svg>
+        </button>
+    </a>
     <div class="settings-content">
-        <div class="change-moodle-url">
-            <h2>Change Moodle URL</h2>
-            <input type="text" id="moodle-url" placeholder="Enter Moodle URL" />
-            <button id="change-moodle-url">Change</button>
+        <h2>Change Moodle URL</h2>
+        <div id="moodle-url-container">
+            <input type="search" id="moodle-url" class="material-button material-element material-left" placeholder="Enter Moodle URL" />
+            <button id="change-moodle-url-button" class="material-button material-element material-right">Save</button>
         </div>
-        <div class="set-theme">
-            <h2>Set Theme</h2>
-            <div class="switch">
-                <input type="checkbox" id="theme-switch" />
-                <label for="theme-switch">Toggle</label>
-            </div>
+        <h2>Set Theme</h2>
+        <div id="switch-container">
+            <label for="theme-select" id="theme-select-label" class="material-element material-left">Theme:</label>
+            <select id="theme-select" class="material-element material-right">
+                <option value="auto" selected>Auto</option>
+                <option value="dark">Dark</option>
+                <option value="light">Light</option>
+            </select>
         </div>
+
     </div>
 </body>
 

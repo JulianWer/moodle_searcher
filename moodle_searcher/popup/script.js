@@ -139,7 +139,7 @@ function saveFile(file, subjectID) {
     });
 }
 
-async function getTextOfPage(page) {
+export async function getTextOfPage(page) {
     return (await page.getTextContent()).items.map((i) => i.str).join(" ");
 }
 

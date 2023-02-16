@@ -48,6 +48,7 @@ document.getElementById("clear-button").addEventListener("click", async () => {
 });
 
 
+
 function hideAllContainers() {
     for (let container of CONTENT_CONTAINERS) {
         container.style.display = "none";
@@ -174,7 +175,7 @@ function renderPage(pdf, pageNumber, fileUrl) {
             canvasContext: canvas.getContext('2d'),
             viewport: viewport
         });
-        highlightQueryOnRenderedPage(page);
+        //highlightQueryOnRenderedPage(page);
     });
 }
 
@@ -186,55 +187,57 @@ function getCanvas(width, height, onclickHandler) {
     return canvas;
 }
 
-async function highlightQueryOnRenderedPage(page) {
-    let query = CACHE.query;
-    let textContent = getTextOfPage(page);
-    let queryIndex = (await textContent).indexOf(query);
-    if (queryIndex >= 0) {
-        let queryLength = query.length;
-        let queryRects = await getRectsOfTextOnPage(page, queryIndex, queryLength);
-        console.log(queryRects);
-        for (let rect of queryRects) {
-            highlightRectOnCanvas(rect, page);
-        }
-    }
-}
 
-function highlightRectOnCanvas(rect, page) { // TODO working wierdly
-    let canvas = document.getElementById("pages-container").lastChild;
-    let context = canvas.getContext("2d");
-    context.beginPath();
-    context.rect(rect.x, rect.y, rect.width, rect.height);
-    context.fillStyle = "yellow";
-    context.fill();
-}
 
-function getRectsOfTextOnPage(page, queryIndex, queryLength){ 
-    return page.getTextContent().then((textContent) => {
-        let rects = [];
-        let textItems = textContent.items;
-        for (let i = 0; i < textItems.length; i++) {
-            let textItem = textItems[i];
-            let text = textItem.str;
-            let textLength = text.length;
-            let textRect = textItem.transform;
-            if (queryIndex >= 0 && queryIndex < textLength) {
-                let rect = {
-                    x: textRect[4],
-                    y: textRect[5],
-                    width: textRect[0] * textLength,
-                    height: textRect[3]
-                };
-                rects.push(rect);
-                queryIndex = -1;
-            } else if (queryIndex >= textLength) {
-                queryIndex -= textLength;
-            }
-        }
-        return rects;
-    });
+// async function highlightQueryOnRenderedPage(page) {
+//     let query = CACHE.query;
+//     let textContent = getTextOfPage(page);
+//     let queryIndex = (await textContent).indexOf(query);
+//     if (queryIndex >= 0) {
+//         let queryLength = query.length;
+//         let queryRects = await getRectsOfTextOnPage(page, queryIndex, queryLength);
+//         console.log(queryRects);
+//         for (let rect of queryRects) {
+//             highlightRectOnCanvas(rect, page);
+//         }
+//     }
+// }
 
-}
+// function highlightRectOnCanvas(rect, page) { // TODO working wierdly
+//     let canvas = document.getElementById("pages-container").lastChild;
+//     let context = canvas.getContext("2d");
+//     context.beginPath();
+//     context.rect(rect.x, rect.y, rect.width, rect.height);
+//     context.fillStyle = "yellow";
+//     context.fill();
+// }
+
+// function getRectsOfTextOnPage(page, queryIndex, queryLength){ 
+//     return page.getTextContent().then((textContent) => {
+//         let rects = [];
+//         let textItems = textContent.items;
+//         for (let i = 0; i < textItems.length; i++) {
+//             let textItem = textItems[i];
+//             let text = textItem.str;
+//             let textLength = text.length;
+//             let textRect = textItem.transform;
+//             if (queryIndex >= 0 && queryIndex < textLength) {
+//                 let rect = {
+//                     x: textRect[4],
+//                     y: textRect[5],
+//                     width: textRect[0] * textLength,
+//                     height: textRect[3]
+//                 };
+//                 rects.push(rect);
+//                 queryIndex = -1;
+//             } else if (queryIndex >= textLength) {
+//                 queryIndex -= textLength;
+//             }
+//         }
+//         return rects;
+//     });
+
+// }
 
 
 

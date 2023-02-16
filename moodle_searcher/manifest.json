@@ -3,12 +3,12 @@
   "description": "Base Level Extension",
   "version": "1.0",
   "manifest_version": 3,
-  "content_scripts":[{
-    "matches": ["https://moodle.hs-mannheim.de/*"],
-    "js":["scripts/contentScript.js"]
-  }],
   "action": {
     "default_popup": "popup/index.html",
     "default_icon": "images/logo_light.png"
-  }
+  },
+  "permissions": [
+    "storage",
+    "scripting"
+  ]
 }

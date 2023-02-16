@@ -7,8 +7,15 @@
 // TODO maybe add little arrow in each subject and file row
 // TODO show container with animation etc
 
-import { getAllSubjectsOfQuery, getAllFilesFromSubjectOfQuery, getAllPagesFromFileOfQuery, clearDatabase , getTextOfPage} from './script.js';
+import {
+    getAllSubjectsOfQuery,
+    getAllFilesFromSubjectOfQuery,
+    getAllPagesFromFileOfQuery,
+    clearDatabase,
+    getTextOfPage
+} from './script.js';
 import '../pdfjs-3.3.122-dist/build/pdf.js'
+
 pdfjsLib.GlobalWorkerOptions.workerSrc = '../pdfjs-3.3.122-dist/build/pdf.worker.js';
 
 // for cross browser support
@@ -28,8 +35,35 @@ let CONTENT_CONTAINERS = [
     document.getElementById("files-container"),
     document.getElementById("pages-container")
 ];
+
 hideButtons();
 hideAllContainers();
+console.log(chrome.scripting);
+
+setMoodleUrl("https://moodle.hs-mannheim.de");//TODO build mask for it
+
+await initMoodleUrl();
+
+async function getMoodleUrl() {
+    return (await _browser.storage.local.get())["moodleUrl"] + '/*';
+}
+
+function setMoodleUrl(moodleUrl) {
+    _browser.storage.local.set({moodleUrl: moodleUrl});
+}
+
+async function initMoodleUrl() {
+    _browser.scripting.unregisterContentScripts({
+        ids: (await _browser.scripting.getRegisteredContentScripts()).map((obj) => obj.id)
+    });
+    _browser.scripting.registerContentScripts([{
+        id: "moodle-script",
+        matches: [await getMoodleUrl()],
+        js: ['scripts/contentScript.js'],
+    }]);
+
+}
+
 document.getElementById("reload-button").addEventListener("click", () => sendMessage("reloadMessage"));
 document.getElementById("search-button").addEventListener("click", async () => {
     await updateQuery();
@@ -38,7 +72,7 @@ document.getElementById("search-button").addEventListener("click", async () => {
 document.body.addEventListener('keypress', async (e) => {
     if (e.key === 'Enter') {
         await updateQuery();
-        await showSubjectsFromQuery();    
+        await showSubjectsFromQuery();
     }
 });
 document.getElementById("prev-button").addEventListener("click", () => showPreviousTable());
@@ -46,7 +80,6 @@ document.getElementById("clear-button").addEventListener("click", async () => {
     await clearDatabase();
     await showSubjectsFromQuery();
 });
-
 
 
 function hideAllContainers() {
@@ -168,7 +201,7 @@ function renderPages(pages, file) {
 
 function renderPage(pdf, pageNumber, fileUrl) {
     pdf.getPage(pageNumber).then(function (page) {
-        let viewport = page.getViewport({ scale: 1.0 });
+        let viewport = page.getViewport({scale: 1.0});
         let canvas = getCanvas(viewport.width, viewport.height, () => window.open(fileUrl + "#page=" + pageNumber));
         document.getElementById("pages-container").appendChild(canvas);
         page.render({
@@ -186,7 +219,6 @@ function getCanvas(width, height, onclickHandler) {
     canvas.onclick = onclickHandler
     return canvas;
 }
-
 
 
 // async function highlightQueryOnRenderedPage(page) {
@@ -212,7 +244,7 @@ function getCanvas(width, height, onclickHandler) {
 //     context.fill();
 // }
 
-// function getRectsOfTextOnPage(page, queryIndex, queryLength){ 
+// function getRectsOfTextOnPage(page, queryIndex, queryLength){
 //     return page.getTextContent().then((textContent) => {
 //         let rects = [];
 //         let textItems = textContent.items;
@@ -240,9 +272,8 @@ function getCanvas(width, height, onclickHandler) {
 // }
 
 
-
 function sendMessage(name, data = {}, response_handler = null) {
-    _browser.tabs.query({ active: true, lastFocusedWindow: true }, (tabs) => {
+    _browser.tabs.query({active: true, lastFocusedWindow: true}, (tabs) => {
         data["name"] = name;
         _browser.tabs.sendMessage(tabs[0].id, data, response_handler);
     });

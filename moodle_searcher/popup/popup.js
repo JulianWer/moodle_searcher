@@ -1,11 +1,12 @@
 // TODO delete files before reload
+// TODO settings for theme (dark/light)
 // TODO mark found words in pdfs
 // TODO add hints to hover of buttons
 // TODO show status of download (blink/rotate while not finished etc)
 // TODO maybe add little arrow in each subject and file row
 // TODO show container with animation etc
 
-import { getAllSubjectsOfQuery, getAllFilesFromSubjectOfQuery, getAllPagesFromFileOfQuery, clearDatabase } from './script.js';
+import { getAllSubjectsOfQuery, getAllFilesFromSubjectOfQuery, getAllPagesFromFileOfQuery, clearDatabase , getTextOfPage} from './script.js';
 import '../pdfjs-3.3.122-dist/build/pdf.js'
 pdfjsLib.GlobalWorkerOptions.workerSrc = '../pdfjs-3.3.122-dist/build/pdf.worker.js';
 
@@ -40,13 +41,13 @@ document.getElementById("clear-button").addEventListener("click", async () => {
 });
 
 
-function hideAllContainers(){
-    for (let container of CONTENT_CONTAINERS){
+function hideAllContainers() {
+    for (let container of CONTENT_CONTAINERS) {
         container.style.display = "none";
     }
 }
 
-function showContainer(_){
+function showContainer(_) {
     hideAllContainers();
     CONTENT_CONTAINERS[currentActiveContainer].style.display = "block";
 }
@@ -166,6 +167,7 @@ function renderPage(pdf, pageNumber, fileUrl) {
             canvasContext: canvas.getContext('2d'),
             viewport: viewport
         });
+        highlightQueryOnRenderedPage(page);
     });
 }
 
@@ -176,6 +178,22 @@ function getCanvas(width, height, onclickHandler) {
     canvas.onclick = onclickHandler
     return canvas;
 }
+
+async function highlightQueryOnRenderedPage(page) {
+    let query = CACHE.query;
+    let textContent = getTextOfPage(page);
+    let queryIndex = (await textContent).indexOf(query);
+    if (queryIndex > -1) {
+        var range = document.createRange();
+        range.setStart(page, queryIndex);//TODO page is not a node
+        range.setEnd(page, query.length);
+        var rects = range.getClientRects();
+        console.log(rects);
+    }
+}
+
+
+
 
 function sendMessage(name, data = {}, response_handler = null) {
     _browser.tabs.query({ active: true, lastFocusedWindow: true }, (tabs) => {

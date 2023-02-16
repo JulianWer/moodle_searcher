@@ -1,6 +1,7 @@
 // TODO delete files before reload
 // TODO settings for theme (dark/light)
 // TODO mark found words in pdfs
+// settings page (which mooodle paltform, dark/light theme, etc)
 // TODO add hints to hover of buttons
 // TODO show status of download (blink/rotate while not finished etc)
 // TODO maybe add little arrow in each subject and file row
@@ -189,7 +190,7 @@ async function highlightQueryOnRenderedPage(page) {
     let query = CACHE.query;
     let textContent = getTextOfPage(page);
     let queryIndex = (await textContent).indexOf(query);
-    if (queryIndex > -1) {
+    if (queryIndex >= 0) {
         let queryLength = query.length;
         let queryRects = await getRectsOfTextOnPage(page, queryIndex, queryLength);
         console.log(queryRects);

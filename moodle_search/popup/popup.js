@@ -40,15 +40,7 @@ document.getElementById("clear-button").addEventListener("click", async () => {
     await showSubjectsFromQuery();
 });
 
-let checkb = document.getElementById("theme-toggle");
 
-checkb.addEventListener("change", function(_) {
-    if (this.checked) {
-        setDarkMode();
-    } else {
-        setLightMode();
-    }
-});
 function hideAllContainers(){
     for (let container of CONTENT_CONTAINERS){
         container.style.display = "none";
@@ -58,17 +50,6 @@ function hideAllContainers(){
 function showContainer(_){
     hideAllContainers();
     CONTENT_CONTAINERS[currentActiveContainer].style.display = "block";
-}
-
-function setDarkMode() {
-    document.body.style.backgroundColor = "#1C1C1C";
-    document.body.style.color = "white";
-    document.getElementById("moodle-logo").src = "../images/logo_dark.png";
-}
-function setLightMode() {
-    document.body.style.backgroundColor = "white";
-    document.body.style.color = "black";
-    document.getElementById("moodle-logo").src = "../images/logo_light.png";
 }
 
 function updateQuery() {

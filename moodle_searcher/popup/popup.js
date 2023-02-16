@@ -1,5 +1,4 @@
 // TODO delete files before reload
-// TODO make darkmode-toggle persistent
 // TODO mark found words in pdfs
 // TODO add hints to hover of buttons
 // TODO show status of download (blink/rotate while not finished etc)

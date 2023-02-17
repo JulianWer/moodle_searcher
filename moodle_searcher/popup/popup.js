@@ -1,6 +1,5 @@
 // TODO mark found words in pdfs
 // settings page (which mooodle paltform, dark/light theme, etc)
-// TODO add hints to hover of buttons
 // TODO show status of download (blink/rotate while not finished etc)
 // TODO maybe add little arrow in each subject and file row
 // TODO show container with animation etc

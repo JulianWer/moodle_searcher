@@ -6,24 +6,21 @@ body {
     margin: 0;
 }
 
-@media (prefers-color-scheme: light) {
-    body {
-      background: #FFF;
-      color: #000000;
-    }
-    .moodle-logo {
-        content: url("../../images/logo_light.png");
-    }
-  }
-  @media (prefers-color-scheme: dark) {
-    body {
-      background: #1C1C1C;
-      color: #FFF;
-    }
-    .moodle-logo {
-        content: url("../../images/logo_dark.png");
-    }
-  }
+[data-theme="light"] body {
+  background: #FFF;
+  color: #000000;
+}
+[data-theme="light"] .moodle-logo {
+    content: url("../../images/logo_light.png");
+}
+[data-theme="dark"] body {
+    background: #1C1C1C;
+    color: #FFF;
+}
+[data-theme="dark"] .moodle-logo {
+    content: url("../../images/logo_dark.png");
+}
+
 
 button {
     cursor: pointer;

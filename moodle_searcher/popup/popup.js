@@ -11,10 +11,10 @@ import {
     getAllSubjectsOfQuery,
     getAllFilesFromSubjectOfQuery,
     getAllPagesFromFileOfQuery,
-    clearDatabase,
-    getTextOfPage
+    clearDatabase
 } from './script.js';
-import '../pdfjs-3.3.122-dist/build/pdf.js'
+import '../pdfjs-3.3.122-dist/build/pdf.js';
+import {initMoodleUrl, getMoodleTabId} from "./moodleUrl.js";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = '../pdfjs-3.3.122-dist/build/pdf.worker.js';
 
@@ -38,31 +38,8 @@ let CONTENT_CONTAINERS = [
 
 hideButtons();
 hideAllContainers();
-console.log(chrome.scripting);
-
-setMoodleUrl("https://moodle.hs-mannheim.de");//TODO build mask for it
-
 await initMoodleUrl();
 
-async function getMoodleUrl() {
-    return (await _browser.storage.local.get())["moodleUrl"] + '/*';
-}
-
-function setMoodleUrl(moodleUrl) {
-    _browser.storage.local.set({moodleUrl: moodleUrl});
-}
-
-async function initMoodleUrl() {
-    _browser.scripting.unregisterContentScripts({
-        ids: (await _browser.scripting.getRegisteredContentScripts()).map((obj) => obj.id)
-    });
-    _browser.scripting.registerContentScripts([{
-        id: "moodle-script",
-        matches: [await getMoodleUrl()],
-        js: ['scripts/contentScript.js'],
-    }]);
-
-}
 
 document.getElementById("reload-button").addEventListener("click", () => sendMessage("reloadMessage"));
 document.getElementById("search-button").addEventListener("click", async () => {
@@ -268,13 +245,11 @@ function getCanvas(width, height, onclickHandler) {
 //         }
 //         return rects;
 //     });
-
 // }
 
 
-function sendMessage(name, data = {}, response_handler = null) {
-    _browser.tabs.query({active: true, lastFocusedWindow: true}, (tabs) => {
-        data["name"] = name;
-        _browser.tabs.sendMessage(tabs[0].id, data, response_handler);
-    });
+
+async function sendMessage(name, data = {}, response_handler = null) {
+    data["name"] = name;
+    _browser.tabs.sendMessage(await getMoodleTabId(), data, response_handler);
 }

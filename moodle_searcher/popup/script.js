@@ -12,7 +12,10 @@ _browser.runtime.onMessage.addListener(
                 storeSubject(message.subject).then(
                     async (subjectID) => {
                         await removeFilesFromSubject(subjectID);
-                        dowloadAllPdfs(message.files, subjectID)
+                        await dowloadAllPdfs(message.files, subjectID)
+                        while(!await chekIfFilesAreDownloaded(message.files)){
+                            console.log("waiting for files to be downloaded");
+                        }
                     }
                 );
                 break;
@@ -22,6 +25,27 @@ _browser.runtime.onMessage.addListener(
     }
 );
 
+function chekIfFilesAreDownloaded(files) {
+    return new Promise((resolve, reject) => {
+        const request = getDBRequest(reject);
+        request.onsuccess = (event) => {
+            const db = event.target.result;
+            const transaction = db.transaction("Files", "readonly");
+            const objectStore = transaction.objectStore("Files");
+            const objectStoreRequest = objectStore.getAll();
+            objectStoreRequest.onsuccess = (event) => {
+                const result = event.target.result;
+                const filesAreDownloaded = result.every((e) => {
+                    return files.some((f) => {
+                        return e.name === f.name && e.subjectID === f.subjectID;
+                    });
+                });
+                resolve(filesAreDownloaded);
+            }
+            objectStoreRequest.onerror = reject;
+        };
+    });
+}
 const DBNAME = "MoodleExtensionDB";
 const POSSIBLE_STORES = ["Subjects", "Files"];
 
@@ -42,6 +66,7 @@ function getDBRequest(reject) {
     });
     return request;
 }
+
 
 function getKeyOfExistingSubject(subject) {
     return new Promise((resolve, reject) => {
@@ -154,8 +179,8 @@ function getAllData(storeName, optionalWhereKeyValuePair = {}) {
     });
 }
 
-function dowloadAllPdfs(files, subjectID) {
-    files.forEach(file => saveFile(file, subjectID));
+async function dowloadAllPdfs(files, subjectID) {
+    await files.forEach(file => saveFile(file, subjectID));
 }
 
 function saveFile(file, subjectID) {

@@ -10,7 +10,7 @@ import {
     clearDatabase
 } from './script.js';
 import '../pdfjs-3.3.122-dist/build/pdf.js';
-import {initMoodleUrl, getMoodleTabId} from "./moodleUrl.js";
+import { initMoodleUrl, getMoodleTabId } from "./moodleUrl.js";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = '../pdfjs-3.3.122-dist/build/pdf.worker.js';
 
@@ -37,7 +37,12 @@ hideAllContainers();
 await initMoodleUrl();
 
 
-document.getElementById("reload-button").addEventListener("click", () => sendMessage("reloadMessage"));
+document.getElementById("reload-button").addEventListener("click", () => {
+    rotateReloadImage();
+    var response = sendMessage("reloadMessage");
+    stopRotattionReloadImage();
+    
+});
 document.getElementById("search-button").addEventListener("click", async () => {
     await updateQuery();
     await showSubjectsFromQuery();
@@ -54,6 +59,14 @@ document.getElementById("clear-button").addEventListener("click", async () => {
     await showSubjectsFromQuery();
 });
 
+function rotateReloadImage() {
+    let reloadButton = document.getElementById("reload-image");
+    reloadButton.className = "rotated";
+}
+function stopRotattionReloadImage() {
+    let reloadButton = document.getElementById("reload-image");
+    reloadButton.className = "reload-image";
+}
 
 function hideAllContainers() {
     for (let container of CONTENT_CONTAINERS) {
@@ -111,6 +124,7 @@ function showPreviousTable() {
             break;
     }
 }
+
 
 function showButtons() { // TODO rename
     let button = document.getElementById("prev-button");
@@ -174,7 +188,7 @@ function renderPages(pages, file) {
 
 function renderPage(pdf, pageNumber, fileUrl) {
     pdf.getPage(pageNumber).then(function (page) {
-        let viewport = page.getViewport({scale: 1.0});
+        let viewport = page.getViewport({ scale: 1.0 });
         let canvas = getCanvas(viewport.width, viewport.height, () => window.open(fileUrl + "#page=" + pageNumber));
         document.getElementById("pages-container").appendChild(canvas);
         page.render({

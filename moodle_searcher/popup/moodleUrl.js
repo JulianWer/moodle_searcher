@@ -1,11 +1,14 @@
-
 // for cross browser support
 let _browser = typeof browser === "undefined" ? chrome : browser;
 
 import {getItem, setItem} from "./storage.js";
 
-async function allowedUrl(url){
-    return url.indexOf(await getMoodleUrl()) === 0;
+async function allowedUrl(url) {
+    let urlFromSettingsAsRegexPattern = new RegExp(
+        "^" + (await getMoodleUrl()).replaceAll(".", "\\.").replaceAll("*", ".*") + "((/.*)|)$",
+        "i"
+    );
+    return urlFromSettingsAsRegexPattern.test(url);
 }
 
 export async function getMoodleUrl() {
@@ -37,7 +40,7 @@ export async function initMoodleUrl() {
     console.log(await getMoodleUrl());
     _browser.scripting.registerContentScripts([{
         id: "moodle-script",
-        matches: [await getMoodleUrl()+"/*"],
+        matches: [await getMoodleUrl() + "/*"],
         js: ['scripts/contentScript.js'],
         runAt: "document_start"
     }]);

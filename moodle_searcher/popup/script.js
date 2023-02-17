@@ -10,7 +10,10 @@ _browser.runtime.onMessage.addListener(
         switch (message.name) {
             case "downloadSubject":
                 storeSubject(message.subject).then(
-                    (subjectID) => dowloadAllPdfs(message.files, subjectID)
+                    async (subjectID) => {
+                        await removeFilesFromSubject(subjectID);
+                        dowloadAllPdfs(message.files, subjectID)
+                    }
                 );
                 break;
             default:
@@ -26,8 +29,15 @@ function getDBRequest(reject) {
     const request = window.indexedDB.open(DBNAME, 1);
     request.onerror = reject;
     request.onupgradeneeded = (event => {
+        const db = event.target.result;
         for (let store of POSSIBLE_STORES) {
-            event.target.result.createObjectStore(store, { keyPath: "id", autoIncrement: true });
+            let objectStore = db.createObjectStore(store, { keyPath: "id", autoIncrement: true });
+            // create index
+            if (store === "Files"){
+                if (!objectStore.indexNames.contains('subjectID')) {
+                    objectStore.createIndex('subjectID', 'subjectID');
+                }
+            }
         }
     });
     return request;
@@ -88,6 +98,30 @@ function checkIfSubjectExists(subject) {
             resolve(subjectExists);
         }
         objectStoreRequest.onerror = reject;
+    });
+}
+async function removeFilesFromSubject(subjectID){
+    return new Promise((resolve, reject) => {
+        const request = getDBRequest(reject);
+        request.onsuccess = (event) => {
+            const db = event.target.result;
+            const transaction = db.transaction(["Files"], "readwrite");
+            const objectStore = transaction.objectStore("Files");
+
+            // get all the entries where subject == "Value" and delete them
+            const index = objectStore.index('subjectID');
+            const cursor = index.openCursor(IDBKeyRange.only(subjectID));
+            cursor.onsuccess = (event) => {
+                const result = event.target.result;
+                if (result) {
+                    objectStore.delete(result.primaryKey);
+                    result.continue();
+                } else {
+                    console.log('All entries with subject = "Value" have been deleted');
+                    resolve();
+                }
+            };
+        }
     });
 }
 

@@ -1,5 +1,3 @@
-// TODO delete files before reload
-// TODO settings for theme (dark/light)
 // TODO mark found words in pdfs
 // settings page (which mooodle paltform, dark/light theme, etc)
 // TODO add hints to hover of buttons

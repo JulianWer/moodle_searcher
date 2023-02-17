@@ -26,7 +26,6 @@ export function getMoodleTabId() {
                 console.log(tabs);
                 resolve(tabs[0].id);
             } else {
-                // TODO show an error for a not matching url
                 alert("The url of the current tab does not match the url from the settings");
             }
         });

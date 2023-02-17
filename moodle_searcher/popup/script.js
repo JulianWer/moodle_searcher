@@ -1,3 +1,5 @@
+// TODO not all files are downloaded so the checkfilesdownloaded function is not working
+
 import '../pdfjs-3.3.122-dist/build/pdf.js'
 pdfjsLib.GlobalWorkerOptions.workerSrc = '../pdfjs-3.3.122-dist/build/pdf.worker.js';
 console.log("script.js loaded");
@@ -12,10 +14,11 @@ _browser.runtime.onMessage.addListener(
                 storeSubject(message.subject).then(
                     async (subjectID) => {
                         await removeFilesFromSubject(subjectID);
-                        await dowloadAllPdfs(message.files, subjectID)
-                        while(!await chekIfFilesAreDownloaded(message.files)){
-                            console.log("waiting for files to be downloaded");
+                        await dowloadAllPdfs(message.files, subjectID);
+                        while(!await checkIfFilesAreDownloaded(message.files)) {
+                            console.log("wairing for files to be downloaded");
                         }
+                        sendResponse(true);
                     }
                 );
                 break;
@@ -25,7 +28,7 @@ _browser.runtime.onMessage.addListener(
     }
 );
 
-function chekIfFilesAreDownloaded(files) {
+function checkIfFilesAreDownloaded(files) {
     return new Promise((resolve, reject) => {
         const request = getDBRequest(reject);
         request.onsuccess = (event) => {
@@ -35,12 +38,10 @@ function chekIfFilesAreDownloaded(files) {
             const objectStoreRequest = objectStore.getAll();
             objectStoreRequest.onsuccess = (event) => {
                 const result = event.target.result;
-                const filesAreDownloaded = result.every((e) => {
-                    return files.some((f) => {
-                        return e.name === f.name && e.subjectID === f.subjectID;
-                    });
+                const allFilesDownloaded = files.every((file) => {
+                    return result.some((e) => e.name === file.name);
                 });
-                resolve(filesAreDownloaded);
+                resolve(allFilesDownloaded);
             }
             objectStoreRequest.onerror = reject;
         };

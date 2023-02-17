@@ -40,8 +40,11 @@ await initMoodleUrl();
 document.getElementById("reload-button").addEventListener("click", () => {
     rotateReloadImage();
     var response = sendMessage("reloadMessage");
-    stopRotattionReloadImage();
-    
+    if (response) {
+        response.then(() => {
+            stopRotattionReloadImage();
+        });
+    }    
 });
 document.getElementById("search-button").addEventListener("click", async () => {
     await updateQuery();

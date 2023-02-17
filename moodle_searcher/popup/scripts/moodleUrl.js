@@ -16,7 +16,7 @@ export async function getMoodleUrl() {
 }
 
 export async function setMoodleUrl(url) {
-    await setItem("moodleUrl", url);
+    await setItem("moodleUrl", url + "/*");
 }
 
 export function getMoodleTabId() {
@@ -40,7 +40,7 @@ export async function initMoodleUrl() {
     console.log(await getMoodleUrl());
     _browser.scripting.registerContentScripts([{
         id: "moodle-script",
-        matches: [await getMoodleUrl() + "/*"],
+        matches: [await getMoodleUrl()],
         js: ['scripts/contentScript.js'],
         runAt: "document_start"
     }]);

@@ -1,6 +1,6 @@
 // TODO not all files are downloaded so the checkfilesdownloaded function is not working
 
-import '../pdfjs-3.3.122-dist/build/pdf.js'
+import '../../pdfjs-3.3.122-dist/build/pdf.js'
 pdfjsLib.GlobalWorkerOptions.workerSrc = '../pdfjs-3.3.122-dist/build/pdf.worker.js';
 console.log("script.js loaded");
 

@@ -16,7 +16,7 @@ export async function getMoodleUrl() {
 }
 
 export async function setMoodleUrl(url) {
-    await setItem("moodleUrl", url + "/*");
+    await setItem("moodleUrl", url );
 }
 
 export function getMoodleTabId() {
@@ -27,6 +27,7 @@ export function getMoodleTabId() {
                 resolve(tabs[0].id);
             } else {
                 // TODO show an error for a not matching url
+                alert("The url of the current tab does not match the url from the settings");
             }
         });
     });
@@ -40,7 +41,7 @@ export async function initMoodleUrl() {
     console.log(await getMoodleUrl());
     _browser.scripting.registerContentScripts([{
         id: "moodle-script",
-        matches: [await getMoodleUrl()],
+        matches: [await getMoodleUrl() + "/*"],
         js: ['scripts/contentScript.js'],
         runAt: "document_start"
     }]);

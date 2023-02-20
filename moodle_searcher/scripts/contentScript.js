@@ -7,6 +7,7 @@ _browser.runtime.onMessage.addListener(
     switch (message.name) {
       case "reloadMessage":
         sendMessage("downloadSubject", { subject: getHeading(), files: getArrayOfCorrectPdfUrls() });
+        console.log(getArrayOfCorrectPdfUrls());
         break;
       default:
         console.error("Message not found");
@@ -22,14 +23,16 @@ function getHeading() {
 }
 
 function getArrayOfCorrectPdfUrls() {
-  const links = Array.from(document.querySelectorAll("a.aalink"));
+  const links = Array.from(document.querySelectorAll("a.aalink.stretched-link"));
   const regex = new RegExp("moodle.hs-mannheim.de/mod/resource");
-  function isLinkToPDF(a) {
-    function childIsPdfImg(child) {
-      return child.nodeName === "IMG" && child.src.includes("pdf-24");
-    }
-    return childIsPdfImg(a.firstChild) && a.href.search(regex) > 0;
-  }
+  console.log(links);
+  // not working anymore because of moodle update
+  // function isLinkToPDF(a) {
+  //   function childIsPdfImg(child) {
+  //     return child.nodeName === "IMG" && child.src.includes("pdf");
+  //   }
+  //   return childIsPdfImg(a.firstChild) && a.href.search(regex) > 0;
+  // }
   function formatLink(a) {
     return {
       url: a.href,

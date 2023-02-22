@@ -33,18 +33,22 @@ function getArrayOfCorrectPdfUrls() {
   // }
 
   function isLinkToPDF(a) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('HEAD', a.href, true);
+    return new Promise(function (resolve, reject) {
+      var xhr = new XMLHttpRequest();
+      xhr.open('HEAD', a.href, true);
 
-    xhr.onload = function () {
-      var contentType = xhr.getResponseHeader('Content-Type');
-      if (contentType === 'application/pdf') {
-        console.log(a.href + ' ' + 'PDF');
-        return true;
-      }
+      xhr.onload = function () {
+        var contentType = xhr.getResponseHeader('Content-Type');
+        var bool = contentType === 'application/pdf';
+        resolve(bool);
       };
 
-    xhr.send();
+      xhr.onerror = function () {
+        reject(new Error('Network error'));
+      };
+
+      xhr.send();
+    });
   }
   function formatLink(a) {
     console.log(a.type);
@@ -53,7 +57,11 @@ function getArrayOfCorrectPdfUrls() {
       key: a.innerText
     }
   }
-  return links.filter(isLinkToPDF).map(formatLink);
+  return links.filter(function (link) {
+    return isLinkToPDF(link).then(function (bool) {
+      return bool;
+    });
+  }).map(formatLink);
 }
 
 function sendMessage(name, data = {}, response_handler = null) {

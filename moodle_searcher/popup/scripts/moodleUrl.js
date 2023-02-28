@@ -12,7 +12,7 @@ async function allowedUrl(url) {
 }
 
 export async function getMoodleUrl() {
-    return await getItem("moodleUrl", "https://your-moodle.de")
+    return await getItem("moodleUrl", "https://*hs-mannheim.de")
 }
 
 export async function setMoodleUrl(url) {

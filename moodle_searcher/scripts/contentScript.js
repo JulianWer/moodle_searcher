@@ -7,7 +7,10 @@ _browser.runtime.onMessage.addListener(
     switch (message.name) {
       case "reloadMessage":
         console.log( await getArrayOfCorrectPdfUrls());
-        sendMessage("downloadSubject", { subject: getHeading(), files: await getArrayOfCorrectPdfUrls() });
+        sendMessage("downloadSubject", { subject: getHeading(), files: await getArrayOfCorrectPdfUrls() }, function(response) {
+          console.log(response);
+        });
+        sendMessage("downloadDone");
         break;
       default:
         console.error("Message not found");

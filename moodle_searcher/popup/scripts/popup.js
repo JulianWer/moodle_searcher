@@ -39,12 +39,7 @@ await initMoodleUrl();
 
 document.getElementById("reload-button").addEventListener("click", () => {
     rotateReloadImage();
-    var response = sendMessage("reloadMessage");
-    if (response) {
-        response.then(() => {
-            stopRotattionReloadImage();
-        });
-    }    
+    sendMessage("reloadMessage");      
 });
 document.getElementById("search-button").addEventListener("click", async () => {
     await updateQuery();
@@ -61,6 +56,18 @@ document.getElementById("clear-button").addEventListener("click", async () => {
     await clearDatabase();
     await showSubjectsFromQuery();
 });
+
+_browser.runtime.onMessage.addListener(
+    async(message, _, sendResponse) => {
+      switch (message.name) {
+        case "downloadDone":
+            stopRotattionReloadImage();
+          break;
+        default:
+          console.error("Message not found");
+      }
+    }
+  );
 
 function rotateReloadImage() {
     let reloadButton = document.getElementById("reload-image");

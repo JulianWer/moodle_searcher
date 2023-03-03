@@ -13,14 +13,16 @@ _browser.runtime.onMessage.addListener(
             case "downloadSubject":
                 storeSubject(message.subject).then(
                     async (subjectID) => {
+                        console.log(message.files)
                         await removeFilesFromSubject(subjectID);
                         await dowloadAllPdfs(message.files, subjectID);
-                        while(!await checkIfFilesAreDownloaded(message.files)) {
-                            console.log("wairing for files to be downloaded");
+                        while(!await checkIfAllFilesStored(message.files)){
+                            console.log("not finished");
                         }
-                        sendResponse(true);
+                        console.log("finished");
                     }
                 );
+                sendResponse({ message: true });
                 break;
             default:
                 console.error("Message not found");
@@ -28,7 +30,8 @@ _browser.runtime.onMessage.addListener(
     }
 );
 
-function checkIfFilesAreDownloaded(files) {
+function checkIfAllFilesStored(files) {
+    console.log("checkIfAllFilesStored");
     return new Promise((resolve, reject) => {
         const request = getDBRequest(reject);
         request.onsuccess = (event) => {
@@ -38,10 +41,8 @@ function checkIfFilesAreDownloaded(files) {
             const objectStoreRequest = objectStore.getAll();
             objectStoreRequest.onsuccess = (event) => {
                 const result = event.target.result;
-                const allFilesDownloaded = files.every((file) => {
-                    return result.some((e) => e.name === file.name);
-                });
-                resolve(allFilesDownloaded);
+                const allFilesStored = files.every((file) => result.some((e) => e.url === file.url));
+                resolve(allFilesStored);
             }
             objectStoreRequest.onerror = reject;
         };
@@ -192,7 +193,7 @@ function saveFile(file, subjectID) {
             data: await Promise.all(pages.map(getTextOfPage)),
             subjectID: subjectID
         }).then(() => {
-            console.log("Data stored successfully");
+            console.log("File stored successfully");
         }).catch((error) => {
             console.error("Error storing data:", error);
         });

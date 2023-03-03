@@ -31,7 +31,7 @@ let CONTENT_CONTAINERS = [
   document.getElementById("pages-container"),
 ];
 
-hideButtons();
+hideNavButtons();
 hideAllContainers();
 await initMoodleUrl();
 
@@ -128,22 +128,20 @@ function showPreviousTable() {
       showContainer("files-container");
       break;
     default:
-      hideButtons();
+      hideNavButtons();
       hideAllContainers();
       break;
   }
 }
 
-function showButtons() {
-  // TODO rename
+function showNavButtons() {
   let button = document.getElementById("prev-button");
   button.disabled = false;
   button.classList.remove("disabled");
   button.style.cursor = "pointer";
 }
 
-function hideButtons() {
-  // TODO rename
+function hideNavButtons() {
   let button = document.getElementById("prev-button");
   button.disabled = true;
   button.classList.add("disabled");
@@ -157,7 +155,7 @@ async function showSubjectsFromQuery() {
 }
 
 function showSubjects(subjects) {
-  showButtons();
+  showNavButtons();
   currentActiveContainer = 0;
   showList(
     subjects.map((subject) => [
@@ -213,7 +211,6 @@ function renderPage(pdf, pageNumber, fileUrl) {
       canvasContext: canvas.getContext("2d"),
       viewport: viewport,
     });
-    //highlightQueryOnRenderedPage(page);
   });
 }
 

@@ -6,7 +6,6 @@ _browser.runtime.onMessage.addListener(
   async(message, _, sendResponse) => {
     switch (message.name) {
       case "reloadMessage":
-        console.log( await getArrayOfCorrectPdfUrls());
         sendMessage("downloadSubject", { subject: getHeading(), files: await getArrayOfCorrectPdfUrls() }, function(response) {
           console.log(response);
         });
@@ -27,7 +26,6 @@ function getHeading() {
 
 function getArrayOfCorrectPdfUrls() {
   const links = Array.from(document.querySelectorAll("a.aalink.stretched-link"));
-  //const regex = new RegExp("moodle.hs-mannheim.de/mod/resource");
  
   function isLinkToPDF(a) {
     return new Promise(function (resolve, reject) {

@@ -13,7 +13,6 @@ _browser.runtime.onMessage.addListener(
             case "downloadSubject":
                 storeSubject(message.subject).then(
                     async (subjectID) => {
-                        console.log(message.files)
                         await removeFilesFromSubject(subjectID);
                         await dowloadAllPdfs(message.files, subjectID);
                         while(!await checkIfAllFilesStored(message.files)){
@@ -31,7 +30,6 @@ _browser.runtime.onMessage.addListener(
 );
 
 function checkIfAllFilesStored(files) {
-    console.log("checkIfAllFilesStored");
     return new Promise((resolve, reject) => {
         const request = getDBRequest(reject);
         request.onsuccess = (event) => {

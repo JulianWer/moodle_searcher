@@ -33,9 +33,6 @@
     transform: scale(0.95);
 }
 
-.material-button:focus {
-    border: 2px solid grey;
-}
 
 .material-button[disabled] {
     transform: none;

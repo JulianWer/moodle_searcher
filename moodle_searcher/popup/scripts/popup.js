@@ -207,9 +207,13 @@ function renderPage(pdf, pageNumber, fileUrl) {
       window.open(fileUrl + "#page=" + pageNumber)
     );
     document.getElementById("pages-container").appendChild(canvas);
-    page.render({
-      canvasContext: canvas.getContext("2d"),
+    let context = canvas.getContext("2d");
+    let renderTask = page.render({
+      canvasContext: context,
       viewport: viewport,
+    });
+    renderTask.promise.then(function () {
+      console.log("Page rendered");
     });
   });
 }

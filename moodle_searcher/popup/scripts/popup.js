@@ -132,14 +132,14 @@ function showPreviousTable() {
 
 function showNavButtons() {
 	let button = document.getElementById('prev-button');
-	button.disabled = false;
+	button.querySelector('svg path').style.fill = 'white';
 	button.classList.remove('disabled');
 	button.style.cursor = 'pointer';
 }
 
 function hideNavButtons() {
 	let button = document.getElementById('prev-button');
-	button.disabled = true;
+	button.querySelector('svg path').style.fill = '#303237';
 	button.classList.add('disabled');
 	button.style.cursor = 'default';
 }

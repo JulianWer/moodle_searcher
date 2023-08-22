@@ -142,3 +142,6 @@ canvas {
     display: flex;
     justify-content: space-between;
 }
+#prev-button svg path {
+    fill: #303237; /* Change this to the desired color */
+  }

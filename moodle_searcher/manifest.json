@@ -7,6 +7,11 @@
     "default_popup": "popup/index.html",
     "default_icon": "images/logo_light.png"
   },
+  "icons": {
+    "16": "images/logo_light.png",
+    "48": "images/logo_light.png",
+    "128": "images/logo_light.png"
+  },
   "permissions": [
     "storage",
     "scripting",

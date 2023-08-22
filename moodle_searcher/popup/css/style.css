@@ -14,11 +14,11 @@ body {
     content: url("../../images/logo_light.png");
 }
 [data-theme="dark"] body {
-    background: #1d1e20;
+    background: #111213;
     color: #FFF;
 }
 [data-theme="dark"] .header {
-    background: #111213;
+    background: #1d1e20;
     color: #FFF;
 }
 [data-theme="dark"] .moodle-logo {
@@ -50,7 +50,7 @@ button {
 
 
 .header {
-    padding: 5%;
+    padding: 2%;
     margin-bottom: 5%;
     border-bottom: #303237 solid 1px;
     display: grid;
@@ -60,10 +60,15 @@ button {
 
 .header * {
     margin: 0;
+    font-size: 1em;
+    margin-right: auto;
+    margin-top: auto;
+    margin-bottom: auto;
 }
 
+
 .moodle-logo {
-    height: 3em;
+    height: 2em;
 }
 
 .search-group {
@@ -73,13 +78,7 @@ button {
     display: grid;
 }
 
-#nav-buttons-container {
-    width: 90%;
-    margin: 5vw;
-    grid-template-columns: 15% auto 15%;
-    display: grid;
-    justify-content: space-between;
-}
+
 
 /* Disabled */
 button[disabled] {
@@ -131,4 +130,15 @@ canvas {
 .content-list > li:not(:last-child) {
     /* selects every li:after except the last one*/
     border-bottom: 1px solid lightgrey;
+}
+
+.content-list li:hover {
+    background-color: #303237;
+}
+
+.footer-nav-buttons-container {
+    margin: 5%;
+    grid-template-columns: 15% auto 15%;
+    display: flex;
+    justify-content: space-between;
 }

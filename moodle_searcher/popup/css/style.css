@@ -14,7 +14,11 @@ body {
     content: url("../../images/logo_light.png");
 }
 [data-theme="dark"] body {
-    background: #1C1C1C;
+    background: #1d1e20;
+    color: #FFF;
+}
+[data-theme="dark"] .header {
+    background: #111213;
     color: #FFF;
 }
 [data-theme="dark"] .moodle-logo {
@@ -46,7 +50,9 @@ button {
 
 
 .header {
-    margin: 5%;
+    padding: 5%;
+    margin-bottom: 5%;
+    border-bottom: #303237 solid 1px;
     display: grid;
     grid-template-columns: 15% auto 15%;
     position: relative;

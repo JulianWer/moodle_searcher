@@ -1,0 +1,15 @@
+/* save all colors in variables */
+
+[data-theme="light"] {
+    --primary-color: #ffff; 
+    --secondary-color: #f8f9fc; 
+    --accent-color: #f1f3f9;
+    --text-color: #000000;
+  }
+
+[data-theme="dark"] {
+    --primary-color: #111213; 
+    --secondary-color: #1d1e20; 
+    --accent-color: #303237;
+    --text-color: #ffffff;
+  }

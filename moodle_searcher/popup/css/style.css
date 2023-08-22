@@ -6,30 +6,60 @@ body {
     margin: 0;
 }
 
+/* light theme */
 [data-theme="light"] body {
-  background: #FFF;
-  color: #000000;
+  background: var(--primary-color);
+  color: var(--text-color);
+}
+[data-theme="light"] .header {
+    background: var(--secondary-color);
 }
 [data-theme="light"] .moodle-logo {
     content: url("../../images/logo_light.png");
 }
+[data-theme="light"] .searchfield, .search-button, .reload-button{
+    background-color: var(--accent-color);
+    color: var(--text-color);
+}
+
+[data-theme="light"] .search-button > svg path, .reload-button svg path {
+    fill: var(--text-color);
+}
+
+[data-theme="light"] .content-list li:hover {
+    background-color: var(--accent-color);
+}
+
+/* dark theme */
 [data-theme="dark"] body {
-    background: #111213;
-    color: #FFF;
+    background: var(--primary-color);
+    color: var(--text-color);
 }
 [data-theme="dark"] .header {
-    background: #1d1e20;
-    color: #FFF;
+    background: var(--secondary-color);
+    
 }
 [data-theme="dark"] .moodle-logo {
     content: url("../../images/logo_dark.png");
 }
+[data-theme="dark"] .searchfield, .search-button, .reload-button{
+    background-color: var(--accent-color);
+    color: var(--text-color);
+}
 
+[data-theme="dark"] .search-button > svg path, .reload-button svg path {
+    fill: var(--text-color);
+}
+
+[data-theme="dark"] .content-list li:hover {
+    background-color: var(--accent-color);
+}
 
 button {
     cursor: pointer;
 }
 
+/* downloading spinner */
 .rotated{
     -webkit-animation:spin 4s linear infinite;
     -moz-animation:spin 4s linear infinite;
@@ -48,11 +78,10 @@ button {
     } 
 }
 
-
 .header {
     padding: 2%;
     margin-bottom: 5%;
-    border-bottom: #303237 solid 1px;
+    border-bottom: var(--accent-color) solid 1px;
     display: grid;
     grid-template-columns: 15% auto 15%;
     position: relative;
@@ -66,7 +95,6 @@ button {
     margin-bottom: auto;
 }
 
-
 .moodle-logo {
     height: 2em;
 }
@@ -76,13 +104,6 @@ button {
     margin: auto;
     grid-template-columns: auto 15% 15%;
     display: grid;
-}
-
-
-
-/* Disabled */
-button[disabled] {
-    opacity: 0.5;
 }
 
 .no-scrollbar, .no-scrollbar * {
@@ -132,16 +153,13 @@ canvas {
     border-bottom: 1px solid lightgrey;
 }
 
-.content-list li:hover {
-    background-color: #303237;
-}
-
 .footer-nav-buttons-container {
     margin: 5%;
     grid-template-columns: 15% auto 15%;
     display: flex;
     justify-content: space-between;
 }
+
 #prev-button svg path {
-    fill: #303237; /* Change this to the desired color */
-  }
+    fill: var(--accent-color);
+}
